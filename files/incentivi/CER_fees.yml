@@ -1,0 +1,15 @@
+# [€ / year]
+fixed_fees:
+          range_0_3_kw: 0
+          range_3_20_kw: 30
+          range_20_1000_kw: 30
+
+# [€ / kWp]
+var_fees:
+          range_0_3_kw: 0
+          range_3_20_kw: 0
+          range_20_1000_kw: 1
+
+# [€ / user / year]
+
+var_fees_user: 4

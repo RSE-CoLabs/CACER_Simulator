@@ -1,0 +1,6 @@
+case_denomination_sensitivity: case_1
+colonna_x_sensitivity: numero_consumers
+flag_show: false
+flag_show_sensitivity: false
+label_colonna_x_sensitivity: Taglia impianto PV (kW)
+detailed_report: false

@@ -1,0 +1,253 @@
+# IDEA cambiare la variazione mettendo dizionario {data: variazione}
+variazione_annua:
+  
+  # prezzo energia
+  dossier: [1.0, 0.8, 0.7200000000000001, 0.6408, 0.557496, 0.557496, 0.557496, 0.557496, 0.557496, 0.557496, 0.557496, 0.557496, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997, 0.47944655999999997]
+  dossier_rivisto_1: [1.0, 0.9, 0.8200000000000001, 0.7408, 0.657496, 0.657496, 0.657496, 0.657496, 0.657496, 0.657496, 0.657496, 0.657496, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997, 0.57944655999999997]
+  dossier_rivisto_2: [1.0, 0.9, 0.9, 0.85, 0.80, 0.80, 0.75, 0.75, 0.75, 0.75, 0.75, 0.70, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65]
+  costante: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  
+  # oneri generali di sistema (DA RIVEDERE!)
+  # N.B. si potrebbe considerare anche il fatto che per i primi anni si ha l'azzeramento degli ogs per le utenze non domestiche
+  ogs: [1.0, 1.0317460317460319, 1.0793650793650795, 1.1269841269841272, 1.1269841269841272, 1.047619047619048, 1.031746031746032, 1.0158730158730163, 0.8412698412698415, 0.3015873015873016, 0.15873015873015875, 0.11111111111111112, 0.09523809523809525, 0.07936507936507937, 0.0634920634920635, 0.0634920634920635, 0.047619047619047616, 0.047619047619047616, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175, 0.03174603174603175]
+  
+  # trasporto
+  trasporto: [1, 1.05, 1.05, 1.10, 1.10, 1.10, 1.10, 1.10, 1.15, 1.15, 1.15, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20, 1.20]
+
+perdite_prelievo_BT: 0.10 # perdite % in prelievo per utenze connesse in BT con cui si deve maggiorare l'energia prelevata
+perdite_prelievo_MT: 0.038 # perdite % in prelievo per utenze connesse in MT con cui si deve maggiorare l'energia prelevata
+
+##########################################################################################################################
+
+domestico:
+  
+  indexed: # PE = PUN medio mensile per fasce + spread
+    spread: 0.040 # €/kWh
+    me_PCV_fixed: 144 # €/POD/anno
+
+  maggior_tutela: # PE
+    schema_1:
+      F1: 0.08216 # vedi bollette servizio di maggior tutela (reale)         
+    schema_2: 
+      F1: 0.08311
+      F2: 0.08172 # vedi bollette servizio di maggior tutela (reale)
+    schema_3: 
+      F1: 0.08311
+      F2: 0.08172
+      F3: 0.08172 # vedi bollette servizio di maggior tutela 
+
+  flat_CEDIS_2023-24: # PE
+    schema_1: 
+      F1: 0.1124875
+    schema_2: 
+      F1: 0.1124875
+      F2: 0.1124875
+    schema_3: 
+      F1: 0.1124875
+      F2: 0.1124875
+      F3: 0.1124875
+      
+  flat_11: # PE
+    schema_1: 
+      F1: 0.11 
+    schema_2: 
+      F1: 0.11
+      F2: 0.11
+    schema_3: 
+      F1: 0.11
+      F2: 0.11
+      F3: 0.11 
+
+  me_PD_energy: 0.01993 # €/kWh
+  me_PCV_fixed: 113.0935 # €/POD/anno
+  me_DISPbt_fixed: -6.8242 # €/POD/anno
+  me_PPE_energy: 0.03465 # €/kWh
+  
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+  
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  duty: 0.0227 # €/kWh (per domestici con residenza con Pcontrattuale <= 3kW si applica solo per consumi > 150kWh mensili)
+  
+  # l'iva è al 10 % sulle utenze domestiche
+  vat: 0.10 # % su imponibile (totale con accise)
+
+##########################################################################################################################
+
+industriale:
+
+  indexed: # PE = PUN medio mensile per fasce + spread
+    spread: 0.040 # €/kWh
+    me_PCV_fixed: 144 # €/POD/anno
+
+  flat_15:
+    schema_1: 
+      F1: 0.15250
+    schema_2: 
+      F1: 0.15250
+      F1: 0.15250  
+    schema_3: 
+      F1: 0.15250
+      F1: 0.15250
+      F1: 0.15250
+  
+  flat_11: # IN UTILIZZO PER PROGETTO PIEMONTE 
+    schema_1: 
+      F1: 0.11 
+    schema_2: 
+      F1: 0.11
+      F2: 0.11  
+    schema_3: 
+      F1: 0.11
+      F2: 0.11 
+      F3: 0.11
+
+  me_PD_energy: 0.01993 # €/kWh
+  me_PCV_fixed: 113.0935 # €/POD/anno
+  me_DISPbt_fixed: -6.8242 # €/POD/anno
+  me_PPE_energy: 0.03465 # €/kWh
+
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  duty: 0.0227 # €/kWh
+  
+  # l'iva è al 22 % sulle utenze non domestiche
+  vat: 0.22 # % su imponibile (totale con accise)
+
+##########################################################################################################################
+
+commerciale:
+
+  #   maggior_tutela:
+  #     schema_1: 0.41569 # vedi bollette servizio di maggior tutela
+  #     schema_2: [0.41569, 0.37395] # vedi bollette servizio di maggior tutela     
+  #     schema_3: [0.41569 , 0.44139 , 0.37395] # vedi bollette servizio di maggior tutela (reale)
+
+  indexed: # PE = PUN medio mensile per fasce + spread
+    spread: 0.040 # €/kWh
+    me_PCV_fixed: 144 # €/POD/anno
+
+  flat_11: # IN UTILIZZO PER PROGETTO PIEMONTE 
+    schema_1: 
+      F1: 0.11 
+    schema_2: 
+      F1: 0.11
+      F2: 0.11   
+    schema_3: 
+      F1: 0.11
+      F2: 0.11 
+      F3: 0.11 
+
+  flat_15:
+    schema_1: 
+      F1: 0.15250 
+    schema_2: 
+      F1: 0.15250
+      F1: 0.15250  
+    schema_3: 
+      F1: 0.15250
+      F1: 0.15250
+      F1: 0.15250
+
+  me_PD_energy: 0.01993 # €/kWh
+  me_PCV_fixed: 113.0935 # €/POD/anno
+  me_DISPbt_fixed: -6.8242 # €/POD/anno
+  me_PPE_energy: 0.03465 # €/kWh
+
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  duty: 0.0227 # €/kWh
+  
+  # l'iva è al 22 % sulle utenze non domestiche
+  vat: 0.22 # % su imponibile (totale con accise)
+
+##########################################################################################################################
+
+pubblico:
+  indexed: # PE = PUN medio mensile per fasce + spread
+    spread: 0.040 # €/kWh
+    me_PCV_fixed: 144 # €/POD/anno
+
+  maggior_tutela:
+    schema_1: 
+      F1: 0.41569 
+    schema_2: 
+      F1: 0.41569
+      F2: 0.37395  
+    schema_3: 
+      F1: 0.41569
+      F2: 0.41569 
+      F3: 0.37395 
+
+  flat_11: # IN UTILIZZO PER PROGETTO PIEMONTE 
+    schema_1: 
+      F1: 0.11 
+    schema_2: 
+      F1: 0.11
+      F2: 0.11  
+    schema_3: 
+      F1: 0.11
+      F2: 0.11 
+      F3: 0.11 
+
+  me_PD_energy: 0.01993 # €/kWh
+  me_PCV_fixed: 113.0935 # €/POD/anno
+  me_DISPbt_fixed: -6.8242 # €/POD/anno
+  me_PPE_energy: 0.03465 # €/kWh
+
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  duty: 0.0227 # €/kWh (per P<3kW si applica solo per consumi > 150kWh mensili)
+  
+  # l'iva è al 22 % sulle utenze non domestiche
+  vat: 0.22 # % su imponibile (totale con accise)

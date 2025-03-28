@@ -1,0 +1,13 @@
+colors: 
+  blu: rgba(31, 119, 180, 0.6)
+  blu2: rgba(31, 119, 180, 0.8)
+  azzurro: 'rgba(31, 200, 250, 0.7)'
+  verde: rgba(44, 160, 44, 0.7)
+  arancione: rgba(255, 160, 50, 0.7)
+  marrone: rgba(150, 150, 100, 0.7)
+  rosso: rgba(214, 39, 40, 0.7)
+  violetto: rgba(148, 103, 189, 0.7)
+  giallo: rgba(250, 180, 0, 0.7)
+  verde_piemonte: rgba(102, 204, 127, 1)
+  blu_piemonte: rgba(102, 179, 204, 1)
+  rosso_piemonte: rgba(204, 102, 102, 1)
