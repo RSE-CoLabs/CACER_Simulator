@@ -1,0 +1,199 @@
+# time simulation
+start_date: 2025-01-01
+project_lifetime_yrs: 20
+
+type_of_cacer: CER # CER; AUC; AID; NO_CACER
+
+# time interval
+delta_t: 15Min # "15Min" or "1H"
+
+# location
+provincia_it: Milano
+
+# random factor to be applied to the load, in %. Es 5 means 5%
+rand_factor: 5 # [%]
+rand_factor_noCER: 2 # [%]
+
+perdite_MT: 0.023 # TIS
+perdite_BT: 0.052 # TIS
+TRASe: 10.57 # [€/MWh] TRASe - Parte unitaria variabile della tariffa di trasmissione (CUafa),m
+BTAU: 0.65 # [€/MWh] corrispettivo unitario di autoconsumo forfetario mensile CUAfb),m pari al valore più elevato della componente variabile di distribuzione definita per le utenze per altri usi in bassa tensione (BTAU) vigenti nel mese m-esimo
+Cpr_bt: 0.0260
+Cpr_mt: 0.0120
+
+dod: 0.8 # dept of discharge for Li_ion battery
+round_trip_efficiency: 0.9 # round trip efficiency for Li-ion battery
+pv_derating_factor: 0.01  # derating factor for photovoltaic generators
+battery_derating_factor: 0.0000635 # derating factor for energy storing capacity for Li-ion battery, in p.u. per cycle (es. 0.0000635 is 0.00635% loss per complete cycle, so 80% @3500 cycles)
+
+# mercato
+market_scenario: dossier_rivisto_2 # mettere una delle tipologie di scenario possibili, vedere file fornitori.yml (pensare se modificarne il nome)
+
+###########
+# filename
+###########
+
+# filename general
+filename_calendar: files\\general\\calendar.csv
+filename_monthly_calendar: files\\general\\monthly_calendar.csv
+filename_comuni_italiani: files\\general\\comuni_italiani.csv
+filename_giorni_tipo: files\\general\\fasce.csv # standard daily distribution of tariffs F1, F2 and F3 in working day, sat, sun
+
+# filename gen_pv
+filename_output_csv_gen_pv: files\\gen_pv\\output_gen_pv.csv
+filename_output_xlsx_gen_pv: files\\gen_pv\\output_gen_pv.xlsx
+filename_output_csv_1kWp: files\\gen_pv\\output_1kWp.csv
+filename_output_xlsx_1kWp: files\\gen_pv\\output_1kWp.xlsx
+
+# filename energy
+filename_profili_CACER_yml: files\\energy\\profili_CACER.yml #mi sa che si puo eliminare?
+filename_CACER_energy_monthly: files\\energy\\CACER_energy_monthly.xlsx
+filename_carichi: files\\energy\\carichi.csv
+filename_carichi_noCER: files\\energy\\carichi_noCER.csv
+filename_CACER_energy_hourly: files\\energy\\CACER_energy_hourly.csv
+filename_valorization_shared_energy_hourly: files\\energy\\shared_energy_valorization_hourly.csv
+filename_incentive_shared_energy_hourly: files\\energy\\shared_energy_incentive_hourly.csv
+filename_incentive_shared_energy_yearly: files\\energy\\shared_energy_incentive_yearly.csv
+filename_pod_energy_exchange: files\\energy\\user_type_energy_exchange.csv
+
+# filename energy\\input
+filename_user_load_arera: files\\energy\\input\\prelievo_orario_ARERA.csv # loads
+filename_carico_input: files\\energy\\input\\curve_carico_input.xlsx # file di output load 
+filename_emulated_load_profile: files\\energy\\input\\emulated_load_profile.csv
+filename_DSM_emulated_load_profile: files\\energy\\input\\DSM_emulated_load_profile.csv
+
+# filename energy\\input\\DSM_optimizer\\
+# filename_injected_energy_optimizer: files\\energy\\input\\DSM_optimizer\\injected_energy_optimizer.csv
+
+# energy\\input\\load_emulator
+filename_load_profiles_bau: files\\energy\\input\\load_emulator\\profiles_bau.csv
+filename_load_profiles_ls: files\\energy\\input\\load_emulator\\profiles_ls.csv
+filename_usage_probability: files\\energy\\input\\load_emulator\\appliance_usage_probability.xlsx
+filename_appliance: files\\energy\\input\\load_emulator\\appliances\\washing machine.csv
+filename_appliances_load: files\\energy\\input\\load_emulator\\appliance_load_profile.xlsx
+
+# filename incentives
+filename_CACER_incentivi: files\\incentivi\\CACER_incentivi.csv
+filename_CACER_incentivi_per_configuration: files\\incentivi\\CACER_incentivi_per_configuration.csv
+CER_fees: files\\incentivi\\CER_fees.yml
+filename_repartition_matrix: files\\finance\\repartition_matrix.xlsx
+
+# filename PZO
+filename_input_PZO: files\\PZO\\hourly_PZO_input.csv
+filename_input_PUN: files\\PZO\\PUN_input_data.csv
+filename_output_csv_PZO_data: files\\PZO\\output_PZO_data.csv
+
+ # filename RID
+filename_RID_input: files\\RID\\RID_input.yml
+filename_output_csv_GSE_RID_fees: files\\RID\\output_GSE_RID_fees.csv
+filename_output_xlsx_RID: files\\RID\\output_RID.xlsx
+filename_output_csv_RID: files\\RID\\output_RID.csv
+filename_output_csv_RID_active_CACER: files\\RID\\output_RID_active_CACER.csv
+
+# filename finance
+filename_investment_matrix: files\\finance\\investment_matrix.csv
+filename_ownership_matrix: files\\finance\\ownership_matrix.xlsx
+filename_user_entry_matrix: files\\finance\\user_entry_matrix.csv
+filename_subscription_matrix: files\\finance\\subscription_matrix.csv
+filename_FM_template: files\\finance\\FM_template.csv
+
+# filename results_finance
+filename_FM_results_last_simulation: files\\results_finance\\results_FM_last_simulation.csv
+filename_FM_yearly_results_last_simulation: files\\results_finance\\yearly_results_FM_last_simulation.csv
+filename_FM_test: files\\results_finance\\test.csv
+filename_report: files\\report.yml
+
+# filename yaml
+input_FM_yml: files\\input_FM_new.yml
+input_FM_yml_new: files\\input_FM_new.yml
+filename_recap: files\\recap.yml
+filename_registry_plants_yml: files\\registry_plants.yml
+filename_registry_plants_csv: files\\registry_plants.csv
+filename_mercato: files\\mercato.yml
+filename_registry_user_types_yml: files\\registry_user_types.yml
+filename_registry_users_yml: files\\registry_users.yml
+
+# filename xlsx
+filename_financial_model: Financial_Model.xlsm
+filename_users_CACER_xls: users CACER.xlsx
+filename_registry_users_csv: files\\registry_users.csv
+filename_membership_matrix: files\\membership_matrix.csv
+filename_plant_operation_matrix: files\\plant_operation_matrix.xlsx
+filename_input_FM_excel: files\\inputs_FM.xlsx
+
+# report
+filename_template_report: assets\\report\\Report_template.docx
+filename_template_report_un_cam: assets\\report\\UnCam_Report_template.docx
+
+#########
+# folder
+#########
+
+# folder PF_analysis
+# foldername_template: files\\PF_analysis\\report_PF_analysis\\template\\
+# foldername_report: files\\PF_analysis\\report_PF_analysis\\
+# foldername_report_results: files\\PF_analysis\\report_PF_analysis\\report cases\\
+# report_parameters_yml: files\\PF_analysis\\report_PF_analysis\\report_parameters.yml
+# foldername_result_PF: files\\PF_analysis\\results_PF\\
+# folder_network: files\\PF_analysis\\network\\
+
+# folder energy
+foldername_energy: files\\energy\\
+foldername_result_energy: files\\energy\\profili_utenti\\
+foldername_result_emulator: files\\energy\\input\\load_emulator\\results_emulator\\
+foldername_all_result_emulator: files\\energy\\input\\load_emulator\\all_results_emulator\\
+# foldername_DSM_optimizer_data: files\\energy\\input\\DSM_optimizer\\data\\
+# foldername_DSM_optimizer_func: files\\energy\\input\\DSM_optimizer\\func\\
+# foldername_DSM_optimizer: files\\energy\\input\\DSM_optimizer\\
+
+# folder finance
+foldername_bills: files\\finance\\bills\\
+foldername_finance_users: files\\finance\\users\\
+foldername_finance_plants: files\\finance\\plants\\
+foldername_finance_configurations: files\\finance\\configurations\\
+foldername_finance: files\\finance\\
+
+# folder results finance
+foldername_result_finance: files\\results_finance\\
+foldername_all_results_finance: files\\results_finance\\all_results_finance\\
+
+# folder results PF analysis
+# foldername_all_results_PF: files\\PF_analysis\\all_results_PF\\
+
+# folder assets
+foldername_graphs: assets\\
+foldername_graph_pv: assets\\gen_pv\\
+foldername_graphs_energy: assets\\energy\\
+foldername_graphs_finance: assets\\finance\\
+foldername_graphs_generali: assets\\general\\
+foldername_graphs_all_results: assets\\all_results\\
+forlername_graphs_load_profile_emulator: assets\\load_profile_emulator\\
+forldername_graphs_DSM_optimizer: assets\\DSM_optimizer\\user ca
+folder_images: assets\\results\\
+# forldername_graphs_PF_analysis: assets\\PF_analysis\\
+
+# standard day for charts
+day_spring: 2025-03-24 # equinozio primavera
+day_summer: 2025-06-24 # solstizio estate
+day_autumn: 2025-09-22 # equinozio autunno
+day_winter: 2025-12-18 # solstizio inverno
+
+# categories of users
+category_id:
+  pubblico: P
+  domestico: D
+  industriale: I
+  commerciale: C
+  ristorazione: R
+  supermercato: S
+  religioso: T
+  scuola: Q
+  bar: B
+  albergo: A
+  parrucchiere: E
+  ufficio: U
+  colonnina: X
+  utenza condominiale: W
+  altro: N
+  idro: O
+  cogeneratore: G
