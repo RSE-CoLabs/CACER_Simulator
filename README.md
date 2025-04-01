@@ -71,7 +71,7 @@ You’ll need:
 
 ### 3. Load Profile Domestic Users Emulator
 
-<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="1000">
+<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
 
 `⏳ work in progress...`
 
