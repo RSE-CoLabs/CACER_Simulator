@@ -91,6 +91,8 @@ You’ll need:
 
 ### 5. Discounted Cash Flow Simulator
 
+<img title="DCF_scheme" src="assets\readme_images\DCF_scheme.png" alt="DCF_scheme" data-align="center" width="1000">
+
 `⏳ work in progress...`
 
 #### 5.1. Funding Scheme 
