@@ -57,15 +57,21 @@ You’ll need:
 
 ### 1. Photovoltaic Productivity Simulator
 
+<img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photoltaici_profile_generator_scheme.PNG" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
+
 `⏳ work in progress...`
 
 `🚀 A tutorial main will be released later for this module!`
 
 ### 2. BESS Simulator
 
+<img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.PNG" alt="Bills_generator_scheme" data-align="center" width="1000">
+
 `⏳ work in progress...`
 
 ### 3. Load Profile Domestic Users Emulator
+
+<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.PNG" alt="BESS_profile_generator_scheme" data-align="center" width="1000">
 
 `⏳ work in progress...`
 
