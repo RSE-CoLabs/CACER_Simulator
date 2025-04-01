@@ -57,7 +57,7 @@ You’ll need:
 
 ### 1. Photovoltaic Productivity Simulator
 
-<img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photoltaici_profile_generator_scheme.png" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
+<img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photovoltaic_profile_generator_scheme.png" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
 
 `⏳ work in progress...`
 
