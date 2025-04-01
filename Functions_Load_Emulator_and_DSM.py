@@ -38,6 +38,8 @@ def generate_calendar_modified(start_day, end_day):
         cal                         dataframe con datetime, working_day (0=lunedi, 6=domenica), holiday (True False) and Tariff (1,2,3)
     """ 
 
+    print(blue("Generate calendar:\n"))
+
     delta_t = '15Min' # we need to modify this in the future versions!!!
 
     start_date = start_day.strftime("%Y-%m-%d")
@@ -151,8 +153,8 @@ def create_appliance_start_time(num_days, calendario, flag_daily_activation = Tr
 
     ##########################################################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -259,6 +261,8 @@ def create_all_user_appliance_start_time(emulated_users_list, num_days, calendar
         all_user_appliance_start_time_dict_3: dictionary with the start time for the third use of the appliance (if activated)
     """
 
+    print(blue("\nGenerate all user appliance start time:\n"))
+
     # initialize the dictionaries
     output = {}
     all_user_appliance_start_time_dict_1 = {} # number of uses equal to 1
@@ -290,6 +294,8 @@ def create_all_user_appliance_start_time(emulated_users_list, num_days, calendar
         pickle.dump(all_user_appliance_start_time_dict, fp)
 
     #############################################################################
+
+    print("\n     **** All appliance start time created! ****")
 
     return (all_user_appliance_start_time_dict_1, all_user_appliance_start_time_dict_2, all_user_appliance_start_time_dict_3)
 
@@ -422,6 +428,8 @@ def create_all_user_load_profile(start_time_dict_1, start_time_dict_2, start_tim
         all_user_load_profile_dict: dictionary with all load profile for all days simulated for all users fixed
     """
 
+    print(blue("\nGenerate all users profile dictionary:\n"))
+
     all_user_load_profile_dict = {} # we create a dict with all load profile for each day for every users (timesteps on rows and user_id on columns)
 
     # if true we use all appliances for the user load profile simulation
@@ -458,7 +466,7 @@ def create_all_user_load_profile(start_time_dict_1, start_time_dict_2, start_tim
     # now = datetime.now().strftime("(%Y-%m-%d_%H-%M)")
     with open(folder + title_flag + 'all_user_load_profile_dict.pkl', 'wb') as fp:
         pickle.dump(all_user_load_profile_dict, fp)
-        print("\nDictionary users load profile exported!")
+        print("\n**** Dictionary users load profile exported! ****\n")
 
     return all_user_load_profile_dict
 
@@ -541,6 +549,8 @@ def create_all_user_appliance_load_profile(start_time_dict, emulated_users_list,
         all_user_appliance_load_profile_dict: dictionary with all appliance load profile for each day for all the users under exam    
     """
 
+    print(blue("Generate all users appliances load profile dictionary:\n"))
+
     all_user_appliance_load_profile_dict = {} # we create a dict with all appliance load profile for each day for all the users under exam
 
     for id_user in tqdm(emulated_users_list):
@@ -563,12 +573,11 @@ def create_all_user_appliance_load_profile(start_time_dict, emulated_users_list,
     # now = datetime.now().strftime("(%Y-%m-%d_%H-%M)")
     with open(folder + title_flag + 'all_user_appliance_load_profile_dict.pkl', 'wb') as fp:
         pickle.dump(all_user_appliance_load_profile_dict, fp)
-        print("Dictionary appliance load profile exported!")
-        print('')
+        # print("Dictionary appliance load profile exported!\n")
 
     #############################################################################
 
-    print("All users completed!")
+    print("\n**** All users completed! ****")
 
     return all_user_appliance_load_profile_dict
 
@@ -585,6 +594,8 @@ def create_single_user_load_profile_df(all_user_load_profile_dict, calendario, f
     Outputs:
         all_user_df: This dataframe has an unstacked structure and is created with timestep on rows (entire time range) and users on columns.
     """
+
+    print(blue("Generate single user load profile df:\n"))
 
     all_user_df = pd.DataFrame() # we create a df to save all load profile for each days for every users (timesteps on rows and user_id on columns)
 
@@ -626,7 +637,7 @@ def create_single_user_load_profile_df(all_user_load_profile_dict, calendario, f
 
     all_user_df.to_csv(filename)
 
-    print('\nAll user load profiles csv exported!')
+    print('\n**** All user load profiles csv exported! ****')
 
     return all_user_df
 
@@ -884,7 +895,6 @@ def load_profile_emulator(emulated_users_list, start_day, end_day, flag_last_dic
     # else we create the appliance start time
     else:
         output = create_all_user_appliance_start_time(emulated_users_list, num_days, calendario, flag_daily_activation, flag_multi_use)
-        print("\n     All appliance start time created!")
 
     #########################################################################
 
@@ -1085,8 +1095,8 @@ def plot_single_user_appliance_load_profile(all_user_appliance_load_profile_dict
 
     ##########################################################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1143,8 +1153,8 @@ def plot_appliance_load_profile():
 
     #########################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1196,8 +1206,8 @@ def plot_all_day_load_profile(all_user_load_profile, user):
 
     #########################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1252,8 +1262,8 @@ def plot_average_users_load_profile(all_user_load_profile, plot_type):
 
     #########################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1315,8 +1325,8 @@ def comparison_average_load_profile_arera_profile(all_user_load_profile, month):
 
     #########################################################################################################
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1396,7 +1406,7 @@ def comparison_average_load_profile_arera_profile(all_user_load_profile, month):
 
 ###################################################################################################################
 
-def plot_all_day_appliance_load_profile(user, appliance, df):
+def plot_all_day_appliance_load_profile(user, appliance):
     """Plot the appliance load profile for the user under exam for all days.
     
     Inputs:
@@ -1408,8 +1418,18 @@ def plot_all_day_appliance_load_profile(user, appliance, df):
         plot of the appliance load profile for the user under exam for all days
     """
 
-    start = datetime(2024,1,1)
-    end = datetime(2024,1,2)
+    # import dictionary from external file
+    config = yaml.safe_load(open("config.yml", 'r'))
+    folder = config["foldername_result_emulator"]
+
+    with open(folder + 'all_user_appliance_load_profile_dict.pkl', 'rb') as fp:
+        all_user_appliance_load_profile_dict = pickle.load(fp)
+        print("Dictionary appliance noDSM start time imported!")
+
+    df = all_user_appliance_load_profile_dict[user][appliance]
+
+    start = datetime(2025,1,1)
+    end = datetime(2025,1,2)
 
     list_timestep_dt = []
 
@@ -1554,6 +1574,80 @@ def create_optimal_appliance_start_time_dictionary():
 
 ###################################################################################################################
 
+def extract_single_appliance_df(appliance, calendar, all_user_appliance_load_profile_dict):
 
+    all_user_df = pd.DataFrame() # we create a df to save all load profile for each days for every users (timesteps on rows and user_id on columns)
+
+    for user in tqdm(all_user_appliance_load_profile_dict.keys()):
+
+        df = all_user_appliance_load_profile_dict[user][appliance].copy()
+
+        df_1 = pd.DataFrame() # we create a df to save the load profile for each days for the user under exam (timesteps on rows and a unique column)
+
+        i = 0 # flag first iteration
+
+        for column in df.columns:
+            
+            df_2 = df[column].copy() # we extract a colum (corresponding to a single day load profile)
+            
+            # if first iteration
+            if i == 0:
+                df_1 = df_2.copy(deep = False)
+            # if not first iteration
+            else:
+                df_1 = pd.concat([df_1, df_2], axis = 0, ignore_index = True).copy()
+
+            i = 1 # update flag first iteration
+
+        all_user_df[user] = df_1.values # add df single user load profile to all_user_df
+
+    all_user_df.set_index(calendar['datetime'].values, inplace = True) # set right index with calendar
+    all_user_df.index.names = ['datetime']
+
+    config = yaml.safe_load(open('config.yml'))
+    folder = config['foldername_result_emulator']
+
+    all_user_df.to_csv(folder + appliance + '.csv')
+
+    print('Dataframe ' + appliance + ' created and exported!\n')
+
+    return all_user_df
+
+###################################################################################################################
+
+def create_emulated_users_list(num_user):
+
+    print(blue("Create emulated users id list:\n"))
+
+    emulated_users_list = []
+
+    users_count = 1
+
+    for user in range(num_user):
+        
+        user_count_base36 = np.base_repr(users_count, base=10, padding=3)[-3:]
+        user_id = "u_" + user_count_base36
+
+        users_count += 1
+
+        emulated_users_list.append(user_id)
+
+    print("**** Emulated users id list created! ****\n")
+
+    return emulated_users_list
+
+###################################################################################################################
+
+def create_all_user_appliance_start_time_mod(num_user, num_days, calendar, flag_daily_activation = True, flag_multi_use = True):
+
+    emulated_users_list = create_emulated_users_list(num_user)
+
+    output = create_all_user_appliance_start_time(emulated_users_list, num_days, calendar, flag_daily_activation, flag_multi_use)
+
+    start_time_dict_1 = output[0]
+    start_time_dict_2 = output[1]
+    start_time_dict_3 = output[2]
+
+    return (start_time_dict_1, start_time_dict_2, start_time_dict_3)
 
 ###################################################################################################################
