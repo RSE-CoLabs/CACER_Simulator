@@ -1132,7 +1132,7 @@ def plot_single_user_appliance_load_profile(all_user_appliance_load_profile_dict
 ###################################################################################################################
 
 # graph average load profiles
-def plot_appliance_load_profile():
+def plot_appliance_usage_probability():
     """Plot the average load profile for all appliances for the user under exam.
     
     Internal inputs:
@@ -1649,5 +1649,194 @@ def create_all_user_appliance_start_time_mod(num_user, num_days, calendar, flag_
     start_time_dict_3 = output[2]
 
     return (start_time_dict_1, start_time_dict_2, start_time_dict_3)
+
+###################################################################################################################
+
+def plot_appliance_load_profile(flag_show = True):
+
+    config = yaml.safe_load(open("config.yml", 'r'))
+
+    folder_graphs = config['forlername_graphs_load_profile_emulator']
+    folder_appliance_load = config["filename_appliances_load"]
+    appliance_load_df = pd.read_excel(folder_appliance_load)
+
+    #########################################################################################################
+
+    datetime_index = pd.date_range(start="00:00", end="23:45", freq="15min")
+
+    appliance_load_df.index = datetime_index
+    appliance_load_df.index = appliance_load_df.index.strftime('%H:%M')
+
+    appliance_load_df = appliance_load_df.drop(columns = ["timestep"])
+
+    #########################################################################################################
+
+    appliance_load_df.index = pd.to_datetime(appliance_load_df.index)
+    appliance_load_df['minutes'] = appliance_load_df.index.hour * 60 + appliance_load_df.index.minute
+
+    fig = go.Figure()
+    title = 'Load profile of the different appliances'
+
+    # Plot the entire DataFrame
+    for column in ["dish_washer", "washing_machine", "oven", "tv", "microwaves"]:
+        fig.add_trace(go.Scatter(x=appliance_load_df["minutes"], y=appliance_load_df[column] * 4, mode='markers + lines', name=column, marker=dict(size=5)))
+
+    #########################################################################################################
+
+    fig.update_layout(
+        title_text = title, 
+        xaxis = dict(title='minutes', rangeslider=dict(visible=False))
+        )
+
+    fig.update_yaxes(title_text = '[kW]')
+
+    #########################################################################################################
+
+    fig.update_layout(
+        paper_bgcolor='white',  # Set the overall background to white
+        plot_bgcolor='white',  # Set the plot area background to white
+        xaxis=dict(
+            range=[0, 180],
+            showgrid=True,  # Enable grid on x-axis
+            gridcolor='lightgray',  # Grid color
+            gridwidth=1,  # Grid line width
+            dtick=15,
+            showline=True,
+            linewidth=1,
+            linecolor='gray',
+            mirror=True,
+        ),
+
+        yaxis=dict(
+            range=[0, 1.25],
+            showgrid=True,  # Enable grid on y-axis
+            gridcolor='lightgray',  # Grid color
+            gridwidth=1,  # Grid line width
+            dtick=0.25,
+            zeroline=True,  # Ensure y=0 line is visible
+            zerolinecolor='black',  # Emphasize the y=0 line color
+            zerolinewidth=2,  # Emphasize the y=0 line width
+            showline=True,
+            linewidth=1,
+            linecolor='gray',
+            mirror=True,
+        )
+    )
+
+    # Update layout to position the legend at the bottom
+    fig.update_layout(    
+        font=dict(
+            family="Arial",  # Font family
+            size=14,         # Default font size for all elements
+            color="black"    # Font color
+        )
+    )
+
+    #########################################################################################################
+
+    if flag_show: fig.show()
+
+    #########################################################################################################
+
+    fig.write_html(folder_graphs + title + ".html")
+    fig.write_image(folder_graphs + title + ".png", width=1000, height=1100/13.2*5, scale = 4)
+    fig.write_image(folder_graphs + title + ".svg")
+
+###################################################################################################################
+
+def plot_main_appliance_load_profile(flag_show = True):
+
+    config = yaml.safe_load(open("config.yml", 'r'))
+
+    folder_graphs = config['forlername_graphs_load_profile_emulator']
+    folder_appliance_load = config["filename_appliances_load"]
+    appliance_load_df = pd.read_excel(folder_appliance_load)
+
+    #########################################################################################################
+
+    datetime_index = pd.date_range(start="00:00", end="23:45", freq="15min")
+
+    appliance_load_df.index = datetime_index
+    appliance_load_df.index = appliance_load_df.index.strftime('%H:%M')
+
+    appliance_load_df = appliance_load_df.drop(columns = ["timestep"])
+
+    #########################################################################################################
+
+    fig = go.Figure()
+    title = 'Load profile fridge and electricity mains'
+
+    # Plot the entire DataFrame
+    for column in ["fridge", "electricity_mains"]:
+        fig.add_trace(go.Scatter(x=appliance_load_df.index, y=appliance_load_df[column] * 4, mode='markers + lines', name=column, marker=dict(size=5)))
+
+    #########################################################################################################
+
+    fig.update_layout(
+        title_text = title, 
+        # xaxis = dict(title='time', rangeslider=dict(visible=False))
+        )
+
+    fig.update_yaxes(title_text = '[kW]')
+
+    #########################################################################################################
+
+    fig.update_layout(
+        paper_bgcolor='white',  # Set the overall background to white
+        plot_bgcolor='white',  # Set the plot area background to white
+        xaxis=dict(
+            range=[0, 95],
+            showgrid=True,  # Enable grid on x-axis
+            gridcolor='lightgray',  # Grid color
+            gridwidth=1,  # Grid line width
+            dtick=4,
+            showline=True,
+            linewidth=1,
+            linecolor='gray',
+            mirror=True,
+        ),
+
+        yaxis=dict(
+            range=[0, 0.8],
+            showgrid=True,  # Enable grid on y-axis
+            gridcolor='lightgray',  # Grid color
+            gridwidth=1,  # Grid line width
+            dtick=0.1,
+            zeroline=True,  # Ensure y=0 line is visible
+            zerolinecolor='black',  # Emphasize the y=0 line color
+            zerolinewidth=2,  # Emphasize the y=0 line width
+            showline=True,
+            linewidth=1,
+            linecolor='gray',
+            mirror=True,
+        )
+    )
+
+    # Update layout to position the legend at the bottom
+    fig.update_layout(
+        legend=dict(
+            orientation="h",  # Horizontal layout
+            yanchor="bottom", # Anchor to the bottom of the chart
+            y=-0.4,           # Move the legend slightly below the chart
+            xanchor="center", # Center the legend horizontally
+            x=0.5             # Align the legend horizontally in the center
+        ),
+        
+        font=dict(
+            family="Arial",  # Font family
+            size=14,         # Default font size for all elements
+            color="black"    # Font color
+        )
+    )
+
+    #########################################################################################################
+
+    if flag_show: fig.show()
+
+    #########################################################################################################
+
+    fig.write_html(folder_graphs + title + ".html")
+    fig.write_image(folder_graphs + title + ".png", width=1000, height=1100/13.2*5, scale = 4)
+    fig.write_image(folder_graphs + title + ".svg")
 
 ###################################################################################################################
