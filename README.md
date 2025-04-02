@@ -73,6 +73,15 @@ You’ll need:
 
 ### 3. Load Profile Domestic Users Emulator
 
+A domestic load profile emulator has been created that uses the load profiles of individual household appliances and their quarterly usage probabilities. The household appliances considered are:
+- fridge;
+- washing-machine;
+- dish-washer;
+- oven;
+- microwaves;
+- tv.
+Additionally, a base load has been added in order to have a realistic aggregate load profile......
+
 `⏳ work in progress...`
 
 `🚀 A tutorial main will be released later for this module!`
@@ -138,6 +147,10 @@ Redistribution and use in source and binary forms, with or without modification,
 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 3. Neither the name of the NumPy organization nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+### Icons Attribution
+
+Some icons used in this project are designed by Flaticon and are licensed under the Flaticon Basic License.
 
 ## License
 
