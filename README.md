@@ -67,13 +67,11 @@ You’ll need:
 
 ### 2. BESS Simulator
 
-<img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
+<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
 
 `⏳ work in progress...`
 
 ### 3. Load Profile Domestic Users Emulator
-
-<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
 
 `⏳ work in progress...`
 
@@ -88,6 +86,8 @@ You’ll need:
 `⏳ work in progress...`
 
 ### 4. Bills Simulator
+
+<img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
 
 `⏳ work in progress...`
 
