@@ -93,9 +93,11 @@ Additionally, a base load has been added in order to have a realistic aggregate 
 
 With this methodology, aggregate load profiles for domestic users are obtained similar to those shown in the following explanatory figure.
 
+
 <div style="text-align: center;">
   <img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="600">
 </div>
+
 
 In order to add greater randomness to the generation of load profiles, the following functions have been introduced that can be activated through appropriate flags:
 - **Multiple daily activation of the appliance**, it is expected that the appliance can be activated up to a maximum of three times per day. The number of activations is determined at a probabilistic level.
