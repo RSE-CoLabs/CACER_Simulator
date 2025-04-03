@@ -166,6 +166,7 @@ foldername_graph_pv: assets\\gen_pv\\
 foldername_graphs_energy: assets\\energy\\
 foldername_graphs_finance: assets\\finance\\
 foldername_graphs_generali: assets\\general\\
+foldername_graphs_bills: assets\\bills\\
 foldername_graphs_all_results: assets\\all_results\\
 forlername_graphs_load_profile_emulator: assets\\load_profile_emulator\\
 forldername_graphs_DSM_optimizer: assets\\DSM_optimizer\\user ca
