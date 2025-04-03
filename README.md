@@ -80,7 +80,13 @@ A domestic load profile emulator has been created that uses the load profiles of
 - oven;
 - microwaves;
 - tv.
-Additionally, a base load has been added in order to have a realistic aggregate load profile......
+Additionally, a base load has been added in order to have a realistic aggregate load profile. Based on the probability of switching on of individual appliances, an activation instant is extracted at a probabilistic level. The appliance consumption profile is then scheduled and added to the aggregate daily profile. The same procedure is used for each individual appliance, for each day and for each emulated user. An explanatory flow chart is reported below.
+
+<img title="Flow_chart_load_emulator" src="assets\readme_images\Flow_chart_load_emulator.png" alt="Flow_chart_load_emulator" data-align="center" width="1000">
+
+With this methodology, aggregate load profiles for domestic users are obtained similar to those shown in the following explanatory figure.
+
+<img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="1000">
 
 `⏳ work in progress...`
 
