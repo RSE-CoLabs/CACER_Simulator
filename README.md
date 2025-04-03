@@ -59,7 +59,9 @@ You’ll need:
 
 ### 1. Photovoltaic Productivity Simulator
 
-<img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photovoltaic_profile_generator_scheme.png" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
+<div style="text-align: center;">
+  <img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photovoltaic_profile_generator_scheme.png" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
+</div>
 
 `⏳ work in progress...`
 
@@ -67,7 +69,9 @@ You’ll need:
 
 ### 2. BESS Simulator
 
-<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
+<div align="center">
+  <img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
+</div>
 
 `⏳ work in progress...`
 
@@ -80,11 +84,31 @@ A domestic load profile emulator has been created that uses the load profiles of
 - oven;
 - microwaves;
 - tv.
-Additionally, a base load has been added in order to have a realistic aggregate load profile......
 
-`⏳ work in progress...`
+Additionally, a base load has been added in order to have a realistic aggregate load profile. Based on the probability of switching on of individual appliances, an activation instant is extracted at a probabilistic level. The appliance consumption profile is then scheduled and added to the aggregate daily profile. The same procedure is used for each individual appliance, for each day and for each emulated user. An explanatory flow chart is reported below.
 
-`🚀 A tutorial main will be released later for this module!`
+<div style="text-align: center;">
+  <img title="Flow_chart_load_emulator" src="assets\readme_images\Flow_chart_load_emulator.png" alt="Flow_chart_load_emulator" data-align="center" width="1000">
+</div>
+
+With this methodology, aggregate load profiles for domestic users are obtained similar to those shown in the following explanatory figure.
+
+<div style="text-align: center;">
+  <img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="600">
+</div>
+
+In order to add greater randomness to the generation of load profiles, the following functions have been introduced that can be activated through appropriate flags:
+- **Multiple daily activation of the appliance**, it is expected that the appliance can be activated up to a maximum of three times per day. The number of activations is determined at a probabilistic level.
+- **Probability of activation of the appliance on the day in question**, in this case not all appliances are activated daily. The activation is determined at a probabilistic level.
+
+More features will be implemented soon. For example:
+- A large dataset with the load profile of the appliance to consider different technology levels.
+- The profiles of the appliances will be selected based on the socio-territorial context in which the domestic users are being emulated.
+- etc.
+
+More information about using the emulator can be found in the file:
+
+- `main - load_profile_emulator.ipynb`.
 
 #### 3.1. Demand Side Engagement Simulator
 
@@ -96,13 +120,17 @@ Additionally, a base load has been added in order to have a realistic aggregate 
 
 ### 4. Bills Simulator
 
-<img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
+<div style="text-align: center;">
+  <img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
+</div>
 
 `⏳ work in progress...`
 
 ### 5. Discounted Cash Flow Simulator
 
-<img title="DCF_scheme" src="assets\readme_images\DCF_scheme.png" alt="DCF_scheme" data-align="center" width="1000">
+<div style="text-align: center;">
+  <img title="DCF_scheme" src="assets\readme_images\DCF_scheme.png" alt="DCF_scheme" data-align="center" width="1000">
+</div>
 
 `⏳ work in progress...`
 
