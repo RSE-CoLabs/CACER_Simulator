@@ -67,7 +67,9 @@ You’ll need:
 
 ### 2. BESS Simulator
 
-<img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
+<div align="center">
+  <img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
+</div>
 
 `⏳ work in progress...`
 
