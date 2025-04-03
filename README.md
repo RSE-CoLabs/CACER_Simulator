@@ -86,11 +86,20 @@ Additionally, a base load has been added in order to have a realistic aggregate 
 
 With this methodology, aggregate load profiles for domestic users are obtained similar to those shown in the following explanatory figure.
 
-<img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="1000">
+<img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="600">
 
-`⏳ work in progress...`
+In order to add greater randomness to the generation of load profiles, the following functions have been introduced that can be activated through appropriate flags:
+- **Multiple daily activation of the appliance**, it is expected that the appliance can be activated up to a maximum of three times per day. The number of activations is determined at a probabilistic level.
+- **Probability of activation of the appliance on the day in question**, in this case not all appliances are activated daily. The activation is determined at a probabilistic level.
 
-`🚀 A tutorial main will be released later for this module!`
+More features will be implemented soon. For example:
+- A large dataset with the load profile of the appliance to consider different technology levels.
+- The profiles of the appliances will be selected based on the socio-territorial context in which the domestic users are being emulated.
+- etc.
+
+More information about using the emulator can be found in the file:
+
+- `main - load_profile_emulator.ipynb`.
 
 #### 3.1. Demand Side Engagement Simulator
 
