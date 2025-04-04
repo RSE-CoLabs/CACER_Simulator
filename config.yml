@@ -1,6 +1,6 @@
 # time simulation
 start_date: 2025-01-01
-project_lifetime_yrs: 20
+project_lifetime_yrs: 1
 
 type_of_cacer: CER # CER; AUC; AID; NO_CACER
 

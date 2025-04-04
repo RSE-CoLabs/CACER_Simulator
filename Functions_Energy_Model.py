@@ -538,7 +538,6 @@ def simulate_1_kWp_generators(coordinates_dataset, tilt_angle, azimuth):
     # calculate the productivity for the selected photovoltaic module and inverter
     result_ac_energies = simulate_module_productivity(coordinates_dataset, tmys, module, tilt_angle, azimuth, inverter)
 
-
     # calculate the productivity for a pv plant with a capacity of 1 kWp
     result_ac_energies_1kWp = simulate_1_kWp_productivity(module, result_ac_energies)
 
