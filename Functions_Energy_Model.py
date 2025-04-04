@@ -731,8 +731,6 @@ def select_desired_module(desired_pow_value):
         sorted_sandia_modules.loc['Pmpo', column] = Pmpo
     sorted_sandia_modules = sorted_sandia_modules.sort_values('Pmpo', axis = 1, ascending = False)
 
-
-
     desired_pow = desired_pow_value # power [W]
     prev_diff_pow = 1000000 # setting a high value for the difference between the desired power and the module nominal rated power, that will be overwritten in the loop
 
