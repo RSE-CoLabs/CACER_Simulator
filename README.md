@@ -52,13 +52,13 @@ You’ll need:
 
 ---
 
-## 🔥 **New drop incoming!!**
+# 🔥 **New drop incoming!!**
 
-## Main Functionalities
+# Main Functionalities
 
 🚨 PAY ATTENTION: ALL THE FOLLOWING FUNCTIONALITIES ARE ALREADY DEVELOPED IN THIS REPOSITORY AND HOW IT WORKS WILL BE EXPLAINED IN DETAIL LATER IN THIS SECTION 
 
-### 1. Photovoltaic Productivity Simulator
+## 1. Photovoltaic Productivity Simulator
 
 A simulator for the photovoltaic productivity has been created. The pvlib open source library is used in way to simulate the producitivity (more information about the library can be found at the following link ...). The main input of the simulators are:
 
@@ -97,7 +97,7 @@ In this notebook we need to specify:
 
 🚨 **PAY ATTENTION**: In the CACER simulation (using the `main - CACER.ipynb` file) the inputs for the simulation of the productivity are setted in a different way (using `user CACER.xlsx` file).
 
-### 2. BESS Simulator
+## 2. BESS Simulator
 
 <div align="center">
   <img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
@@ -105,7 +105,7 @@ In this notebook we need to specify:
 
 `⏳ work in progress...`
 
-### 3. Load Profile Domestic Users Emulator
+## 3. Load Profile Domestic Users Emulator
 
 A domestic load profile emulator has been created that uses the load profiles of individual household appliances and their quarterly usage probabilities. The household appliances considered are:
 - fridge;
@@ -140,15 +140,15 @@ More information about using the emulator can be found in the file:
 
 - `main - load_profile_emulator.ipynb`.
 
-#### 3.1. Demand Side Engagement Simulator
+### 3.1. Demand Side Engagement Simulator
 
 `⏳ work in progress...`
 
-#### 3.2. Optimal Demand Side Management Simulator
+### 3.2. Optimal Demand Side Management Simulator
 
 `⏳ work in progress...`
 
-### 4. Bills Simulator
+## 4. Bills Simulator
 
 <div style="text-align: center;">
   <img title="Bills_generator_scheme" src="assets\readme_images\Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
@@ -156,7 +156,7 @@ More information about using the emulator can be found in the file:
 
 `⏳ work in progress...`
 
-### 5. Discounted Cash Flow Simulator
+## 5. Discounted Cash Flow Simulator
 
 <div style="text-align: center;">
   <img title="DCF_scheme" src="assets\readme_images\DCF_scheme.png" alt="DCF_scheme" data-align="center" width="1000">
@@ -164,15 +164,15 @@ More information about using the emulator can be found in the file:
 
 `⏳ work in progress...`
 
-#### 5.1. Funding Scheme 
+### 5.1. Funding Scheme 
 
 `⏳ work in progress...`
 
-#### 5.2. Incentives Repartition Methodology
+### 5.2. Incentives Repartition Methodology
 
 `⏳ work in progress...`
 
-### 6. Grid Impact Simulator
+## 6. Grid Impact Simulator
 
 `⏳ work in progress...`
 
@@ -180,9 +180,9 @@ More information about using the emulator can be found in the file:
 
 ---
 
-## Citations
+# Citations
 
-### Pvlib citation
+## Pvlib citation
 
 This project makes use of the [pvlib](https://github.com/pvlib/pvlib-python) library, which is licensed under the BSD 3-Clause License.
 
@@ -194,7 +194,7 @@ Redistribution and use in source and binary forms, with or without modification,
 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 3. Neither the name of the pvlib organization nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-### Numpy Financial citation
+## Numpy Financial citation
 
 This project uses [NumPy Financial](https://github.com/numpy/numpy-financial), which is licensed under the BSD 3-Clause License.
 
@@ -206,11 +206,11 @@ Redistribution and use in source and binary forms, with or without modification,
 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 3. Neither the name of the NumPy organization nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-### Icons Attribution
+## Icons Attribution
 
 Some icons used in this project are designed by Flaticon and are licensed under the Flaticon Basic License.
 
-## License
+# License
 
 BSD 3-Clause License
 
