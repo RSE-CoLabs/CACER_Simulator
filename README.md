@@ -32,6 +32,7 @@ The simulator supports the evaluation of different collective self-consumption s
 - `main - CACER tutorial.ipynb`: interactive Jupyter Notebook with step-by-step instructions for using the CACER simulator.
 - `main - CACER.ipynb`: interactive Jupyter Notebook for using the CACER simulator (cleaned version, without tutorial).
 - `main - load_profile_emulator.ipynb`: interactive Jupyter Notebook with step-by-step instructions for emulating domestic load profile.
+- `main - photovoltaic_productivity_simulator.ipynb`: interactive Jupyter Notebook with step-by-step instructions for simulate photovoltaic productivity.
 - `Reporting.ipynb`: notebook to generate performance reports.
 - `users CACER.xlsx`: example Excel file with user data.
 
@@ -55,17 +56,46 @@ You’ll need:
 
 ## Main Functionalities
 
-`🚨 PAY ATTENTION: ALL THE FOLLOWING FUNCTIONALITIES ARE ALREADY DEVELOPED IN THIS REPOSITORY AND HOW IT WORKS WILL BE EXPLAINED IN DETAIL LATER IN THIS SECTION `
+🚨 PAY ATTENTION: ALL THE FOLLOWING FUNCTIONALITIES ARE ALREADY DEVELOPED IN THIS REPOSITORY AND HOW IT WORKS WILL BE EXPLAINED IN DETAIL LATER IN THIS SECTION 
 
 ### 1. Photovoltaic Productivity Simulator
+
+A simulator for the photovoltaic productivity has been created. The pvlib open source library is used in way to simulate the producitivity (more information about the library can be found at the following link ...). The main input of the simulators are:
+
+- **location**;
+- **capacity of the photovoltaic generator**;
+- **yearly derating factor**.
+
+A typical metheorological year (tmy) is extracted from PVGIS datasets. Actually is setted the Europe/Rome timezone as DatetimeIndex for the data. Furthermore, the following photovoltaic module and inverted are chosen to simulate the basic photovoltaic generator (1 kWp generator):
+
+- **module**: 'Shell_Solar_SM100_24__2003__E__';
+- **inverter**: 'Enphase_Energy_Inc___M175_24_208_Sxx__208V_'.
+
+The possibility of setting different types of modules and inverters will be developed later. Actually, only fixed mount system are modeled.
+
+The first step of the simulator creates a productiviy profile for 1 kWp generator. After, the productivity profile is scaled with the capacity of the generators and derated over the years with a typical derating factor (this parameter can be changed in the config.yml file).
+
+The flow chart of the photovoltaic producitivity simulatore is showed in the following figure.
 
 <div style="text-align: center;">
   <img title="Photovoltaic_profile_generator_scheme" src="assets\readme_images\Photovoltaic_profile_generator_scheme.png" alt="Photovoltaic_profile_generator_scheme" data-align="center" width="1000">
 </div>
 
-`⏳ work in progress...`
+A notebook file to run separately a simulation for a photovoltaic generator was developed:
 
-`🚀 A tutorial main will be released later for this module!`
+- `main - photovoltaic_productivity_simulator.ipynb`.
+
+In this notebook we need to specify:
+
+- **location**;
+- **number of years of the simulation**;
+- **capacity**;
+- **tilt angle**;
+- **azimuth angle**;
+- **derating factor**;
+- **directory to save the csv file with results**.
+
+🚨 **PAY ATTENTION**: In the CACER simulation (using the `main - CACER.ipynb` file) the inputs for the simulation of the productivity are setted in a different way (using `user CACER.xlsx` file).
 
 ### 2. BESS Simulator
 
@@ -93,9 +123,9 @@ Additionally, a base load has been added in order to have a realistic aggregate 
 
 With this methodology, aggregate load profiles for domestic users are obtained similar to those shown in the following explanatory figure.
 
-<div style="text-align: center;">
+<p align="center">
   <img title="Load_emulator_result_example" src="assets\readme_images\Load_emulator_result_example.png" alt="Load_emulator_result_example" data-align="center" width="600">
-</div>
+</p>
 
 In order to add greater randomness to the generation of load profiles, the following functions have been introduced that can be activated through appropriate flags:
 - **Multiple daily activation of the appliance**, it is expected that the appliance can be activated up to a maximum of three times per day. The number of activations is determined at a probabilistic level.
