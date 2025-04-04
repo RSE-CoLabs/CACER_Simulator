@@ -32,6 +32,7 @@ The simulator supports the evaluation of different collective self-consumption s
 - `main - CACER tutorial.ipynb`: interactive Jupyter Notebook with step-by-step instructions for using the CACER simulator.
 - `main - CACER.ipynb`: interactive Jupyter Notebook for using the CACER simulator (cleaned version, without tutorial).
 - `main - load_profile_emulator.ipynb`: interactive Jupyter Notebook with step-by-step instructions for emulating domestic load profile.
+- `main - photovoltaic_productivity_simulator.ipynb`: interactive Jupyter Notebook with step-by-step instructions for simulate photovoltaic productivity.
 - `Reporting.ipynb`: notebook to generate performance reports.
 - `users CACER.xlsx`: example Excel file with user data.
 
