@@ -56,24 +56,24 @@ You’ll need:
 
 ## Main Functionalities
 
-`🚨 PAY ATTENTION: ALL THE FOLLOWING FUNCTIONALITIES ARE ALREADY DEVELOPED IN THIS REPOSITORY AND HOW IT WORKS WILL BE EXPLAINED IN DETAIL LATER IN THIS SECTION `
+`🚨 **PAY ATTENTION**: ALL THE FOLLOWING FUNCTIONALITIES ARE ALREADY DEVELOPED IN THIS REPOSITORY AND HOW IT WORKS WILL BE EXPLAINED IN DETAIL LATER IN THIS SECTION `
 
 ### 1. Photovoltaic Productivity Simulator
 
 A simulator for the photovoltaic productivity has been created. The pvlib open source library is used in way to simulate the producitivity (more information about the library can be found at the following link ...). The main input of the simulators are:
 
-- location;
-- capacity of the photovoltaic generator;
-- yearly derating factor.
+- **location**;
+- **capacity of the photovoltaic generator**;
+- **yearly derating factor**.
 
 A typical metheorological year (tmy) is extracted from PVGIS datasets. Actually is setted the Europe/Rome timezone as DatetimeIndex for the data. Furthermore, the following photovoltaic module and inverted are chosen to simulate the basic photovoltaic generator (1 kWp generator):
 
-- module: 'Shell_Solar_SM100_24__2003__E__';
-- inverter: 'Enphase_Energy_Inc___M175_24_208_Sxx__208V_'.
+- **module**: 'Shell_Solar_SM100_24__2003__E__';
+- **inverter**: 'Enphase_Energy_Inc___M175_24_208_Sxx__208V_'.
 
 The possibility of setting different types of modules and inverters will be developed later. Actually, only fixed mount system are modeled.
 
-The firste step of the simulator generates a productiviy profile for 1 kWp generator. After, the productivity profile is scaled with the capacity of the generators and derated over the years with a typical derating factor (this parameter can be changed in the config.yml file).
+The first step of the simulator creates a productiviy profile for 1 kWp generator. After, the productivity profile is scaled with the capacity of the generators and derated over the years with a typical derating factor (this parameter can be changed in the config.yml file).
 
 The flow chart of the photovoltaic producitivity simulatore is showed in the following figure.
 
@@ -87,15 +87,15 @@ A notebook file to run separately a simulation for a photovoltaic generator was 
 
 In this notebook we need to specify:
 
-- location;
-- number of years of the simulation;
-- capacity;
-- tilt angle;
-- azimuth angle;
-- derating factor;
-- directory to save the csv file with results.
+- **location**;
+- **number of years of the simulation**;
+- **capacity**;
+- **tilt angle**;
+- **azimuth angle**;
+- **derating factor**;
+- **directory to save the csv file with results**.
 
-🚨 PAY ATTENTION: In the CACER simulation (using the `main - CACER.ipynb` file) the inputs for the simulation of the productivity are setted in a different way (using `user CACER.xlsx` file).
+🚨 **PAY ATTENTION**: In the CACER simulation (using the `main - CACER.ipynb` file) the inputs for the simulation of the productivity are setted in a different way (using `user CACER.xlsx` file).
 
 ### 2. BESS Simulator
 
