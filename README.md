@@ -48,7 +48,7 @@ You’ll need:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ToniRollo/CACER-simulator.git
+   git clone https://github.com/ToniRollo/CACER-simulator.git](https://github.com/RSE-EUT/CACER-simulator.git
 
 ---
 
