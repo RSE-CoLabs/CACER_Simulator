@@ -99,11 +99,22 @@ In this notebook we need to specify:
 
 ## 2. BESS Simulator
 
+The simulator has the possibility to include a Battery Energy Storage System for prosumers. The module performs a time-dependant calculation of the energy flows taking as input the production and consumption profiles, and updating the the battery State of Charge for each time step and calculating the convertion losses, which are assessed by using the round-trip efficiciency but without including temperature and current limitations. 
+The energy hierarchy used considers that the electricity production supplies directly the load first; if the production exceeds the load, thus the exceess flows into the battery and, once this is fully charged, the remaining production excess is injected into the grid. When production is zero or below the load, the battery gets discharged to supply the demand untill it is needed or it gets fully discharged, but without injections into the grid. 
+With the current setup, the BESS is charged only from the prosumer generation (not the grid) and its energy supplies only the prosumer load, without injections into the grid.  
+
+As shown in the figure below, the module takes, for the given timestep "t", the production excess OR the energy demand at the battery terminals, checks the battery SOC from the previous timestep "t-1", and updates the battery SOC charging or discharging the battery, net of the energy loss due to the half-cycle efficiency. 
+
 <div align="center">
   <img title="BESS_profile_generator_scheme" src="assets\readme_images\BESS_profile_generator_scheme.png" alt="BESS_profile_generator_scheme" data-align="center" width="600">
 </div>
 
-`⏳ work in progress...`
+The module keeps track of the number of cycles updating its State of Health, applying a constant derating factor to its rated capacity, which gets influent over the years. 
+
+The inputs for the BESS are: 
+- Dept Of Discharge, DoD (from "config.yml", same for all users)
+- rated capacity (specific for each user, from "users CACER.xlsx")
+- derating factor (from "config.yml", same for all users)
 
 ## 3. Load Profile Domestic Users Emulator
 
