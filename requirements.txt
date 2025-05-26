@@ -4,7 +4,7 @@ fpdf==1.7.2
 geopy==2.3.0
 holidays==0.32
 matplotlib==3.10.1
-numpy==2.2.4
+numpy
 numpy_financial==1.0.0
 openpyxl==3.1.1
 pandas==2.2.3
@@ -16,3 +16,6 @@ ruamel.base==1.0.0
 simple_colors==0.1.5
 tqdm==4.66.1
 xlwings==0.29.1
+ruamel.yaml==0.18.6
+scipy==1.9.0
+xlsxwriter
