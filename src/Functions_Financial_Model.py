@@ -14,8 +14,8 @@ import io
 import yaml
 import xlwings as xw
 import glob
-from Functions_General import check_file_status, province_to_region, get_monthly_calendar, add_to_recap_yml, clear_folder_content, get_calendar #,add_to_input_FM_yml
-from Functions_Energy_Model import get_input_gens_analysis
+from src.Functions_General import check_file_status, province_to_region, get_monthly_calendar, add_to_recap_yml, clear_folder_content, get_calendar #,add_to_input_FM_yml
+from src.Functions_Energy_Model import get_input_gens_analysis
 import warnings
 warnings.filterwarnings("ignore")
 from simple_colors import *

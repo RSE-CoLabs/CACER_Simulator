@@ -1,4 +1,4 @@
-from Functions_General import (check_file_status, clear_folder_content, add_to_recap_yml, check_folder_exists, get_calendar, location_italian_to_english)
+from src.Functions_General import (check_file_status, clear_folder_content, add_to_recap_yml, check_folder_exists, get_calendar, location_italian_to_english)
 import pandas as pd
 import numpy as np
 import calendar
