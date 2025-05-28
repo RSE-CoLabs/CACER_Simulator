@@ -2,7 +2,7 @@
 
 ---
 
-# 🔧 Setup repository
+# 🔧 Setup Repository
 
 1. As a first step, clone the repository using `git clone` or by `downloading the folder`.
 2. Then, select the folder you want to create the virtual environment in, right click and open the terminal. Create a virtual environment (in this case named `venv_test`) by running this code: `python -m venv venv_test`
