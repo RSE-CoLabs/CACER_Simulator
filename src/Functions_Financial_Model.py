@@ -25,8 +25,8 @@ from simple_colors import *
 def run_user_type_bill(user_type):
     """ 
     This function creates the electricity bills for a given user type, based on the energy withdrawal (Eprel) coming out of the energy model. 
-    If the user type is prosumer, the function creates one sheet for business-as-usual scenaro (BAU).
-    If the user type is consumer, the function creates two sheets, one for BAU and one for PV (scenario in which the user installs a generation system and reduces its grid withdrawal and thus the electricity bill).
+    If the user type is consumer, the function creates one sheet for business-as-usual scenaro (BAU).
+    If the user type is prosumer, the function creates two sheets, one for BAU and one for PV (scenario in which the user installs a generation system and reduces its grid withdrawal and thus the electricity bill).
     
     Inputs:
         user_type: type of user (user_type_ID)
