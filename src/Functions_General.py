@@ -270,7 +270,9 @@ def generate_users_yml(base=36):
 
     # CHECKS on imported data
     # all user type IDs must be unique
-    assert len(df.user_type.unique()) == len(df.user_type), "ERROR: some user_type share the same ID!"
+    assert len(df.user_type.unique()) == len(df.user_type), "ERROR: some user_type share the same ID! Rectify in users_CACER.xlsx so they are all unique"
+    # all user type denominations must be unique
+    assert len(df.denomination.unique()) == len(df.denomination), "ERROR: some user_type share the same denomination! Rectify in users_CACER.xlsx so they are all unique"
 
     # checking if the names are too long for excel to handle as sheetnames (will trigger errors later on)
     names_length_flag = [len(name)>31 for name in df["user_type"]] 
