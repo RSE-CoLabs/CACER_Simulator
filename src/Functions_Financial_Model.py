@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import numpy_financial as npf
 from simple_colors import *
-from tqdm import tqdm
+from tqdm.auto import tqdm
 import os
 from random import random
 import calendar
