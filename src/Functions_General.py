@@ -1405,4 +1405,5 @@ def setting_CACER_scenario(case_denomination, CACER_type, repartition_scheme):
     add_to_recap_yml(key = "case_denomination", value = case_denomination)
     add_to_recap_yml(key = "type_of_cacer", value = CACER_type)
     edit_incentive_repartition_scheme(repartition_scheme)
-    print("**** All inputs setted! ****")
+    print("**** All inputs set! ****")
+
