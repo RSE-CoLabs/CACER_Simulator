@@ -82,6 +82,69 @@ domestico:
 
 ##########################################################################################################################
 
+utenza condominiale:
+  
+  indexed: # PE = PUN medio mensile per fasce + spread
+    spread: 0.040 # €/kWh
+    me_PCV_fixed: 144 # €/POD/anno
+
+  maggior_tutela: # PE
+    schema_1:
+      F1: 0.08216 # vedi bollette servizio di maggior tutela (reale)         
+    schema_2: 
+      F1: 0.08311
+      F2: 0.08172 # vedi bollette servizio di maggior tutela (reale)
+    schema_3: 
+      F1: 0.08311
+      F2: 0.08172
+      F3: 0.08172 # vedi bollette servizio di maggior tutela 
+
+  flat_CEDIS_2023-24: # PE
+    schema_1: 
+      F1: 0.1124875
+    schema_2: 
+      F1: 0.1124875
+      F2: 0.1124875
+    schema_3: 
+      F1: 0.1124875
+      F2: 0.1124875
+      F3: 0.1124875
+      
+  flat_11: # PE
+    schema_1: 
+      F1: 0.11 
+    schema_2: 
+      F1: 0.11
+      F2: 0.11
+    schema_3: 
+      F1: 0.11
+      F2: 0.11
+      F3: 0.11 
+
+  me_PD_energy: 0.01993 # €/kWh
+  me_PCV_fixed: 113.0935 # €/POD/anno
+  me_DISPbt_fixed: -6.8242 # €/POD/anno
+  me_PPE_energy: 0.03465 # €/kWh
+  
+  transport_DIS_energy: 0.00060 # €/anno/POD
+  transport_DIS_fixed: 4.6058 # €/anno/POD
+  transport_DIS_power: 28.7506 # €/anno/POD
+  transport_TRAS_energy: 0.00848 # €/anno/POD
+  transport_MIS_fixed: 20.4612 # €/anno/POD
+  transport_UC3_energy: 0.000950 # €/kWh
+  transport_UC6_energy: 0.00000 # €/kWh
+  transport_UC6_power: 0.00000 # €/kW
+  
+  ogs_ASOS_energy: 0.029809 # €/kWh
+  ogs_ARIM_energy: 0.008828 # €/kWh
+
+  duty: 0.0227 # €/kWh (per domestici con residenza con Pcontrattuale <= 3kW si applica solo per consumi > 150kWh mensili)
+  
+  # l'iva è al 10 % sulle utenze domestiche
+  vat: 0.10 # % su imponibile (totale con accise)
+
+##########################################################################################################################
+
 industriale:
 
   indexed: # PE = PUN medio mensile per fasce + spread

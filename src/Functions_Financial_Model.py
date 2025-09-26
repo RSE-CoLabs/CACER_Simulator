@@ -1373,7 +1373,7 @@ def create_investment_matrix():
                     # we need to verify which members were in the CACER at the disbursment month
                     disbursement_month = registry_plants[plant]["disbursement_month"] # month_number
                     disbursement_month_string = get_monthly_calendar().set_index("month_number").loc[disbursement_month,"month"] # string as YYYY-MM
-                    users_investing_in_plant = [user for user, membership in membership_matrix[disbursement_month_string].iteritems() if membership == 1] # list of users who are member of the CACER at disbursment month
+                    users_investing_in_plant = [user for user, membership in membership_matrix[disbursement_month_string].items() if membership == 1] # list of users who are member of the CACER at disbursment month
                     
                     # shortlisting to the actual users, who are shareholders and not dummy producers whose shares are owned by other CACER users 
                     users_investing_in_plant = [user for user in users_investing_in_plant if not registry_users[user]["dummy_user"]]

@@ -2,7 +2,8 @@
 start_date: 2025-01-01
 project_lifetime_yrs: 20
 
-type_of_cacer: CER # CER; AUC; AID; NO_CACER
+type_of_cacer: AUC # CER; AUC; AID; NO_CACER
+flag_condominium_bills: True # if true all the users in the condominium pay the bill, otherwise only the admin user pays the bill
 
 # time interval
 delta_t: 15Min # "15Min" or "1H"
