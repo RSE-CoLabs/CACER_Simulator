@@ -16,40 +16,42 @@
 
 ## Method 2:
 
-1. Create the virtual environment
+1. **Create the virtual environment**
 
-Each tutorial includes the function setup_venv() (defined in src/Functions_General.py).
-Running this function will automatically create a virtual environment named .venv and install all the libraries listed in the requirements.txt file.
+   Each tutorial includes the function `setup_venv()` (defined in `src/Functions_General.py`).  
+   Running this function will automatically create a virtual environment named `.venv` and install all the libraries listed in the `requirements.txt` file.
 
-from src.Functions_General import setup_venv
+   ```python
+   from src.Functions_General import setup_venv
 
-setup_venv()
+   setup_venv()
+   ```
 
+2. **Activate the virtual environment**
 
-2. Activate the virtual environment
+   Once created, activate the virtual environment:
 
-Once created, activate the virtual environment:
+   - **Windows**
+     ```bash
+     .venv\Scripts\activate
+     ```
 
-Windows
+   - **macOS / Linux**
+     ```bash
+     source .venv/bin/activate
+     ```
 
-.venv\Scripts\activate
+3. **Check that the notebook is using the correct environment**
 
+   To verify that the notebook is using the correct kernel (the one linked to `.venv`), run the function `check_venv_kernel()`:
 
-macOS / Linux
+   ```python
+   from src.Functions_General import check_venv_kernel
 
-source .venv/bin/activate
+   check_venv_kernel(venv_name='.venv')
+   ```
 
-
-3. Check that the notebook is using the correct environment
-
-To verify that the notebook is using the correct kernel (the one linked to .venv), run the function check_venv_kernel():
-
-from src.Functions_General import check_venv_kernel
-
-check_venv_kernel(venv_name='.venv')
-
-
-If the kernel is correctly configured, the function will confirm it in the output.
+   If the kernel is correctly configured, the function will confirm it in the output.
 
 
 ---
