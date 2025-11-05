@@ -9,7 +9,7 @@ import xlwings as xw
 import contextlib
 import io
 from simple_colors import *
-from tqdm import tqdm
+from tqdm.auto import tqdm
 import csv
 import glob
 from concurrent.futures import ThreadPoolExecutor
