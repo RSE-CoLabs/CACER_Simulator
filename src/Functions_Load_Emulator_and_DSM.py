@@ -11,7 +11,7 @@ import pickle
 import holidays
 import calendar
 import warnings
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from simple_colors import *
 import contextlib
 import io
