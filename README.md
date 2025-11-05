@@ -4,6 +4,8 @@
 
 # 🔧 Setup Repository
 
+## Method 1:
+
 1. As a first step, clone the repository using `git clone` or by `downloading the folder`.
 2. Then, select the folder you want to create the virtual environment in, right click and open the terminal. Create a virtual environment (in this case named `venv_test`) by running this code: `python -m venv venv_test`
 3. Now activate it: `venv_test\Scripts\activate`
@@ -11,6 +13,10 @@
 5. The virtual environment is ready for use.
 6. To check the script runs correctly, open the tutorial notebook (`.ipynb file`) and run cell by cell. If the code does not run smoothly, address the warnings.
 7. Once this step is done, the code and inputs are ready for manipulation!
+
+## Method 2:
+
+🔥 **New drop incoming!!**
 
 ---
 
