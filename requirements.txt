@@ -9,7 +9,7 @@ nbformat
 numpy
 numpy_financial
 openpyxl
-pandas
+pandas == 2.3.3
 plotly
 pvlib
 python_docx
