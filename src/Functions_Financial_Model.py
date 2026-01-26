@@ -71,7 +71,7 @@ def run_user_type_bill(user_type):
     user_load   = pd.read_csv(folder_risultati_energy+user_type+".csv")[["datetime","Eprel","Eaut"]].fillna(0) # Nan in "Eaut" column will generate nan values in bau scenario
     user_load.set_index("datetime", inplace=True)     
 
-    flag_indexed = supplier == "indexed"
+    flag_indexed = supplier in ["indexed", "indexed_ciappartiene_CER"]
 
     duty = electricity_market_data[category]['duty']
     vat = electricity_market_data[category]['vat']
@@ -140,9 +140,20 @@ def run_user_type_bill(user_type):
         user_load["yearly_variation_me"] = [yearly_variation_me[year_index] for year_index in user_load["year_index"]]
         user_load["energy_price_corrected"] = user_load["yearly_variation_me"] * user_load["energy_price"] # €/kWh, updated with yearly variation
         
-        if flag_indexed: # if PUN+spread, once the PUN has been corrected with the yearly variation, spread can be added. This way, we are assuming that spread is fixed over time
-            spread = electricity_market_data[category]["indexed"]["spread"]
-            user_load["energy_price_corrected"] = user_load["energy_price_corrected"] + spread
+        if flag_indexed: # if PUN+spread, once the PUN has been corrected with the yearly variation, spread can be added. 
+            if supplier == "indexed":
+                # This way, we are assuming that spread is fixed over time
+                spread = electricity_market_data[category]["indexed"]["spread"]
+                user_load["energy_price_corrected"] = user_load["energy_price_corrected"] + spread
+            else:
+                print("Tariff: indexed_ciappartiene_CER")
+                user_load["hour"] = user_load.index.str[11:13].astype(int)
+                spread_night = electricity_market_data[category]["indexed_ciappartiene_CER"]["spread_night"]
+                spread_day = electricity_market_data[category]["indexed_ciappartiene_CER"]["spread_day"]
+
+                user_load["spread"] = spread_night # initialization with night-time tariff
+                user_load.loc[(user_load["hour"] < 18) & (user_load["hour"] >= 9),"spread"] = spread_day
+                user_load["energy_price_corrected"] = user_load["energy_price_corrected"] + user_load["spread"]
 
         user_load["me_energy"] = user_load["load_active_corrected"] * user_load["energy_price_corrected"] # €
         
