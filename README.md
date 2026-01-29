@@ -8,7 +8,7 @@
 
 You’ll need:
 
-- Python 3.11
+- **Python 3.11:** currently the repository works fine for the indicated python version!
 - Required libraries listed in `requirements.txt`
 
 ## Installation
