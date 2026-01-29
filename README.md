@@ -39,7 +39,7 @@ Clone the repository using by `downloading the folder` or using bash:
    Each tutorial includes a line with the command `!python src/setup_venv.py`, which is useful for running the script directly from the notebook file.
 
    ```python
-   `!python src/setup_venv.py`
+   !python src/setup_venv.py
    ```
 
 3. **Activate the virtual environment**
