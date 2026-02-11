@@ -40,8 +40,6 @@ files/RID/output_RID.csv
 files/RID/output_RID_active_CACER.csv
 files/RID/output_GSE_RID_fees.csv
 files/PZO/output_PZO_data.csv
-files/incentivi/CACER_incentivi.csv
-files/incentivi/CACER_incentivi_per_configuration.csv
 assets/load_profile_emulator/
 assets/bills/
 assets/gen_pv/
@@ -51,7 +49,11 @@ assets/finance/
 LICENSE.txt
 __pycache__/
 files/energy/input/DSM_optimizer/__pycache__/
-files/energy/input/DSM_optimizer/__pycache__/main.cpython-310.pyc
 files/energy/input/DSM_optimizer/func/__pycache__/
-files/energy/input/DSM_optimizer/func/__pycache__/func.cpython-310.pyc
-files/energy/input/DSM_optimizer/func/__pycache__/ott.cpython-310.pyc
+API_GME.ipynb
+Extract_weather_data.ipynb
+files/energy/carichi_with_hvac.csv
+files/incentives/CACER_incentivi_per_configuration.csv
+files/incentives/CACER_incentivi.csv
+files/HVAC/weather_data/
+files/HVAC/results_HVAC/
