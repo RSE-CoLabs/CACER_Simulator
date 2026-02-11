@@ -363,7 +363,8 @@ def power_range_to_contractual_power(user_type):
     elif power_range == "4.5<P<=6":
         contractual_power = 6
     else:
-        load_profiles = pd.read_csv(config["filename_carichi"], index_col="datetime")
+        # load_profiles = pd.read_csv(config["filename_carichi"], index_col="datetime")
+        load_profiles = pd.read_csv(config["filename_carichi_with_hvac"], index_col="datetime")
         factor = 1
         if config["delta_t"] == "15Min": factor = 4  # if 15min, multiply by 4, as those are kWh/15min. 
         contractual_power = load_profiles[user_type].max() * factor * 1.3 # assumption: contractual power is 1.3 times the max power withdrawn

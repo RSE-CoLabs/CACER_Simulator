@@ -9,7 +9,7 @@ nbformat
 numpy
 numpy_financial
 openpyxl
-pandas==2.3.3
+pandas
 plotly
 pvlib
 python_docx
@@ -19,7 +19,7 @@ simple_colors
 tqdm
 xlwings
 ruamel.yaml
-scipy==1.2.1
+scipy
 xlsxwriter
 kaleido
 folium

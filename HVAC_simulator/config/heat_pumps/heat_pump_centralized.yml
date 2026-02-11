@@ -1,0 +1,81 @@
+maker: Design Builder
+model: autosize
+I_c: 1
+Voltage: 1
+phase: 1
+starting_time: 1
+thermal_storage: True
+heating_mode:
+  alpha1_power: 0.0204476869  # x
+  alpha2_power: 0.0002900515 # x^2
+  alpha3_power: 0 # x^3 
+  alpha4_power: -0.0049160031  # y
+  alpha5_power: 0.0000260904 # y^2
+  alpha6_power: 0   # y^3
+  alpha7_power: 0.0000404003   #x*y
+  alpha8_power: 0 # x^2*y
+  alpha9_power: 0 # x*y^2
+  q_power: 0.9753899179 
+  alpha1_eff: 0.0359056033  # x
+  alpha2_eff: 0.0002757065    # x^2
+  alpha3_eff: 0  # x^3
+  alpha4_eff: -0.0342612220   # y
+  alpha5_eff: 0.0002211755     # y^2
+  alpha6_eff: 0               # y^3
+  alpha7_eff: -0.0003068401               #x*y
+  alpha8_eff: 0               # x^2*y
+  alpha9_eff: 0               # x*y^2
+
+  q_eff: 1.9039959704
+  r_sq: 0.965743614939774
+  p_th_max: 40000     # [W]  Potenza termica massima a condizioni fissate, da manuale utente, pag.10
+  p_th_min: 28800      # [W]  Potenza termica minima a considioni fissate, da manuale utente, pag. 10
+  p_th_nom: 40000      # [W]  Potenza termica nominale a condizioni fissate, da manuale utente, pag.10
+  p_nom: 2380
+  T_setpoint_max: 30
+  f_min_EE: 0      # Rapporto tra il minimo input elettrico e il massimo (rated); determinato attraverso le tabelle fornite dal produttore (Riscaldamento)
+  f_seasonal_eta: 3.2        # Rapporto tra il COP (rated) e quello stagionale (SCOP), definito in condizioni di prova; determinato attraverso le tabelle fornite dal produttore (Riscaldamento)
+
+
+cooling_mode:
+  alpha1_power: 0   # x
+  alpha2_power: 0   # x^2
+  alpha3_power: 0   # x^3
+  alpha4_power: 0   # y
+  alpha5_power: 0   # y^2
+  alpha6_power: 0   # y^3
+  alpha7_power: 0   #x*y
+  alpha8_power: 0   # x^2*y
+  alpha9_power: 0   # x*y^2
+  q_power: 1
+  alpha1_eff: 0   # x
+  alpha2_eff: 0   # x^2
+  alpha3_eff: 0   # x^3
+  alpha4_eff: 0   # y
+  alpha5_eff: 0   # y^2
+  alpha6_eff: 0   # y^3
+  alpha7_eff: 0   #x*y
+  alpha8_eff: 0   # x^2*y
+  alpha9_eff: 0   # x*y^2
+  q_eff: 1
+  r_sq: 0.9717124487592741
+  p_th_max: -75000     # [W] Potenza termica massima a condizioni fissate, da manuale utente, pag.9
+  p_th_min: -23200      # [W] Potenza termica minima a considioni fissate, da manuale utente, pag. 9
+  p_th_nom: -75000      # [W] Potenza termica nominale a condizioni fissate, da manuale utente, pag.9
+  p_nom: 2390
+  T_setpoint_max: 18
+  f_min_EE: 0      # Rapporto tra il minimo input elettrico e il massimo (rated); determinato attraverso le tabelle fornite dal produttore (Riscaldamento)
+  f_seasonal_eta: 4        # Rapporto tra il COP (rated) e quello stagionale (SCOP), definito in condizioni di prova; determinato attraverso le tabelle fornite dal produttore (Riscaldamento)
+
+auxiliaries:
+  Pel_fans: 1726.28 # [W] Consumo elettrico ventilatori PdC centralizzata, da simulazione di Design Builder
+  eta_fans: 0.7 # [W/W] Efficienza ventilatori PdC centralizzata, da simulazione di Design Builder
+  Pel_pumps: 94 # [W] Consumo elettrico pompe di calore, da simulazione di Design Builder
+  eta_pumps: 0.9 # [W/W] Efficienza pompe del sistema, da simulazione di Design Builder
+  V_tank: 7.12 #[m^3] Capacità del serbatoio, da simulazione di Design Builder
+  cp_water: 4186 # [J/(kg.K)]
+  rho_water: 1000 # [kg/m^3]
+  #m_water_tank:V_tank*rho_water # [kg] Da simulazione di Design Builder
+  q_heater: 13093 # [W]
+  T_cut_in: 55.72 #[C]
+  T_dead_band: 5 # [C]
