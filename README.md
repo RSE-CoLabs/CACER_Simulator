@@ -8,7 +8,7 @@
 
 You’ll need:
 
-- Python 3.x
+- **Python 3.11:** currently the repository works fine for the indicated python version!
 - Required libraries listed in `requirements.txt`
 
 ## Installation
@@ -34,16 +34,15 @@ Clone the repository using by `downloading the folder` or using bash:
 
 1. **Create the virtual environment**
 
-   Each tutorial includes the function `setup_venv()` (defined in `src/Functions_General.py`).  
-   Running this function will automatically create a virtual environment named `.venv` and install all the libraries listed in the `requirements.txt` file.
+   Run the script `src/setup_venv.py`.  
+   Running this script will automatically create a virtual environment named `.venv` and install all the libraries listed in the `requirements.txt` file.
+   Each tutorial includes a line with the command `!python src/setup_venv.py`, which is useful for running the script directly from the notebook file.
 
    ```python
-   from src.Functions_General import setup_venv
-
-   setup_venv()
+   !python src/setup_venv.py
    ```
 
-2. **Activate the virtual environment**
+3. **Activate the virtual environment**
 
    Once created, activate the virtual environment:
 
@@ -57,7 +56,7 @@ Clone the repository using by `downloading the folder` or using bash:
      source .venv/bin/activate
      ```
 
-3. **Check that the notebook is using the correct environment**
+4. **Check that the notebook is using the correct environment**
 
    To verify that the notebook is using the correct kernel (the one linked to `.venv`), run the function `check_venv_kernel()`:
 
