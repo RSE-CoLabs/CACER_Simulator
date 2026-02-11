@@ -296,7 +296,8 @@ def CACER_energy_flows():
     dod = config["dod"]
     battery_derating_factor = config["battery_derating_factor"]
 
-    load_profiles = pd.read_csv(config["filename_carichi"], index_col="datetime")
+    # load_profiles = pd.read_csv(config["filename_carichi"], index_col="datetime")
+    load_profiles = pd.read_csv(config["filename_carichi_with_hvac"], index_col="datetime")
     # load_profiles = pd.read_hdf(config["filename_carichi"], index_col="datetime") # HDF seems to be a more efficient alternative. To be explored
     generation = pd.read_csv(config["filename_output_csv_gen_pv"], index_col="datetime")
     generation["month"] = generation.index.str[0:7]
@@ -1319,7 +1320,6 @@ def simulate_unstacked_productivity(result_ac_energies_gens_derated):
 
             # Concatenate the DataFrames: before + new_df + after
             result_ac_energies_to_csv_df = pd.concat([df_before, leap_day, df_after])
-
 
     print ("\n\tCheck leap day completed!")
 

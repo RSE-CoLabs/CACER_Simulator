@@ -1,0 +1,24 @@
+A_heated : 95.43   # [m^2] Dati da modello Design Builder
+#A_walls: 88.52  # [m^2] Dati da modello Design Builder
+A_walls: [22.96, 0, 0, 0, 20.56, 0, 21.05, 0] # ['N','NE','E','SE','S','SW','W','NW'] Punti cardinali delle pareti in [m^2]. Dati da modello Design Builder; Sono valori netti (Senza finestre)
+Volume: 253.74  # [m^3] Dati da modello Design Builder
+U_walls  : 1.259   # [W/(m^2*K)]  Dati da modello Design Builder   
+U_windows: 3.094    # [W/(m^2*K)] Dati da modello Design Builder
+U_roof   : 0.142 #1.649   # [W/(m^2*K)] Dati da modello Design Builder    
+U_ground : 0  #1.649  # [W/(m^2*K)] Dati da modello Design Builder Misurazione originale SEM 0.45  
+# A_windows: 24.64  # [m^2] Dati da modello Design Builder
+A_windows: [7.92, 0, 0, 0, 7.27, 0, 7.38, 0]   # ['N','NE','E','SE','S','SW','W','NW'] Punti cardinali delle finestre in [m^2]. Dati da modello Design Builder; sono valori netti (senza Divisori e telaio)
+ACR : 0.3  # 0.3
+ks_gla: 0.485  # [-] Coefficiente di trasmissione solare diretta, dati da modello Design Builder
+ks_opa: 0.028 # [-] Potrebbe essere pari al prodotto (absorbivity_d*R_se ) con absorbivity_d pari a 0.6 e R_se pari a 0.04, dati da modello Design Builder      
+ks_infra: 0.99     #   # EM aggiunta Considero il contributo dell'infrarosso, pari a (5*emissivity*Fw*R_se*deltaomega_er) con emissivity=0.9, R_se=0.04, Fw=0.5, deltaomega_er=11
+C_m_walls: 134800    # [J/m^2*k] Dati da modello Design Builder
+C_m_roof: 32614    # [J/m^2*k] Dati da modello Design Builder
+C_m_floor: 32614    # [J/m^2*k] Dati da modello Design Builder
+C_m_partitions: 134800 #56560 # [J/m^2*k] Dati da modello Design Builder
+A_partitions: 29.10 # [m^2] Dati da modello Design Builder
+Reflectance: 0.3    # [-] Riflettanza pareti, per il calcolo di K_s
+F_f: 0.916 # [-] Frazione della finestra formata da vetro
+C_s: 11336      # [J/K*m^2] Stima capacità termica pareti divisorie (cartongesso)
+A_s: 2.4    # [m^2] Superficie elementi leggeri edificio
+A_window_frame: 9.5 # [m^2] Superficie telaio finestre

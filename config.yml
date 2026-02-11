@@ -6,7 +6,7 @@ type_of_cacer: CER # CER; AUC; AID; NO_CACER
 flag_condominium_bills: True # if true all the users in the condominium pay the bill, otherwise only the admin user pays the bill
 
 # time interval
-delta_t: 15Min # "15Min" or "1H"
+delta_t: "15Min" # "15Min" or "1H"
 
 # location
 provincia_it: Milano
@@ -50,6 +50,7 @@ filename_output_xlsx_1kWp: files\\gen_pv\\output_1kWp.xlsx
 filename_profili_CACER_yml: files\\energy\\profili_CACER.yml #mi sa che si puo eliminare?
 filename_CACER_energy_monthly: files\\energy\\CACER_energy_monthly.xlsx
 filename_carichi: files\\energy\\carichi.csv
+filename_carichi_with_hvac: files\\energy\\carichi_with_hvac.csv
 filename_carichi_noCER: files\\energy\\carichi_noCER.csv
 filename_CACER_energy_hourly: files\\energy\\CACER_energy_hourly.csv
 filename_valorization_shared_energy_hourly: files\\energy\\shared_energy_valorization_hourly.csv
@@ -71,9 +72,9 @@ filename_appliance: files\\energy\\input\\load_emulator\\appliances\\washing mac
 filename_appliances_load: files\\energy\\input\\load_emulator\\appliance_load_profile.xlsx
 
 # filename incentives
-filename_CACER_incentivi: files\\incentivi\\CACER_incentivi.csv
-filename_CACER_incentivi_per_configuration: files\\incentivi\\CACER_incentivi_per_configuration.csv
-CER_fees: files\\incentivi\\CER_fees.yml
+filename_CACER_incentivi: files\\incentives\\CACER_incentivi.csv
+filename_CACER_incentivi_per_configuration: files\\incentives\\CACER_incentivi_per_configuration.csv
+CER_fees: files\\incentives\\CER_fees.yml
 filename_repartition_matrix: files\\finance\\repartition_matrix.xlsx
 
 # filename PZO
@@ -100,6 +101,15 @@ filename_FM_results_last_simulation: files\\results_finance\\results_FM_last_sim
 filename_FM_yearly_results_last_simulation: files\\results_finance\\yearly_results_FM_last_simulation.csv
 filename_FM_test: files\\results_finance\\test.csv
 filename_report: files\\report.yml
+
+# filnename and folder HVAC_simulator
+folder_weather_data: files\\HVAC\\weather_data\\ # Directory weather data files
+filename_weather_data: files\\HVAC\\weather_data\\weather_data.csv # Filename weather data files
+filename_future_weather_data: files\HVAC\weather_data\weather_data_future_2020_2060.csv
+filename_weather_data_selected_years: files\HVAC\weather_data\weather_data_selected_years.csv
+folder_results_HVAC: files\\HVAC\\results_HVAC\\ # Directory to save results
+building_properties_folder: HVAC_simulator\\config\\buildings\\ # Folder building properties
+hp_properties_folder: HVAC_simulator\\config\\heat_pumps\\ # Folder heat pump properties
 
 # filename yaml
 input_FM_yml: files\\input_FM_new.yml

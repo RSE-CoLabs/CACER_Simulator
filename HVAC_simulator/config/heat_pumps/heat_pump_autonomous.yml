@@ -1,0 +1,78 @@
+maker: Design Builder
+model: autosize
+I_c: 1
+Voltage: 1
+phase: 1
+starting_time: 1
+thermal_storage: False
+heating_mode:
+  alpha1_eff: -0.03002389   # x
+  alpha2_eff: 0.001036766  # x^2
+  alpha3_eff: -0.0000233126 # x^3
+  alpha4_eff: 0     # y
+  alpha5_eff: 0     # y^2
+  alpha6_eff: 0     # y^3
+  alpha7_eff: 0     #x*y
+  alpha8_eff: 0     # x^2*y
+  alpha9_eff: 0     # x*y^2
+  q_eff: 1.191693317
+  alpha1_power: 0.027589715 # x 
+  alpha2_power: 0.000148521 # x^2
+  alpha3_power: 0.0000034946  # x^3
+  alpha4_power: 0            # y
+  alpha5_power: 0            # y^2
+  alpha6_power: 0            # y^3
+  alpha7_power: 0            #x*y
+  alpha8_power: 0            # x^2*y
+  alpha9_power: 0            # x*y^2
+  q_power: 0.757749433
+  r_sq: 1
+  p_th_max: 11100
+  p_th_min: 2880
+  p_th_nom: 5964.5
+  p_nom: 2380
+  T_setpoint_max: 30
+  f_min_EE: 0
+  f_seasonal_eta: 3
+cooling_mode:
+  alpha1_eff: 0.034879757   # x
+  alpha2_eff: -0.0006236060 # x^2
+  alpha3_eff: 0  # x^3
+  alpha4_eff: 0.004976467   # y
+  alpha5_eff: 0.000437885   # y^2
+  alpha6_eff: 0             # y^3
+  alpha7_eff: -0.000727918            #x*y
+  alpha8_eff: 0             # x^2*y
+  alpha9_eff: 0             # x*y^2
+  q_eff: 0.342362868
+  alpha1_power: 0.009543362   # x
+  alpha2_power: 0.000683771    # x^2
+  alpha3_power: 0    # x^3
+  alpha4_power: -0.011042694    # y
+  alpha5_power: 0.000005249      # y^2
+  alpha6_power: 0               # y^3
+  alpha7_power: -0.00000972              #x*y
+  alpha8_power: 0               # x^2*y
+  alpha9_power: 0               # x*y^2
+  q_power: 0.942589311  
+  r_sq: 0.9941
+  p_th_max: -8560
+  p_th_min: -2320
+  p_th_nom: -5431.7
+  p_nom: 2390
+  T_setpoint_max: 18
+  f_min_EE: 0
+  f_seasonal_eta: 2
+
+auxiliaries:
+  Pel_fans: 0 # [W] Consumo elettrico ventilatori PdC centralizzata, da simulazione di Design Builder
+  eta_fans: 0 # [W/W] Efficienza ventilatori PdC centralizzata, da simulazione di Design Builder
+  Pel_pumps: 0 # [W] Consumo elettrico pompe di calore, da simulazione di Design Builder
+  eta_pumps: 0 # [W/W] Efficienza pompe del sistema, da simulazione di Design Builder
+  V_tank: 0 #[m^3] Capacità del serbatoio, da simulazione di Design Builder
+  cp_water: 0 # [J/(kg.K)]
+  rho_water: 0 # [kg/m^3]
+  #m_water_tank:V_tank*rho_water # [kg] Da simulazione di Design Builder
+  q_heater: 4186 # [W]
+  T_cut_in: 0 #[C]
+  T_dead_band: 0 # [C]
