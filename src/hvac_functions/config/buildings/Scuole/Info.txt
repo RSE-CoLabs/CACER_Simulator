@@ -1,0 +1,2 @@
+# I dati sono meno attendibili di quelli per gli edifici residenziali.
+# L'edificio è considerato come un unica grande zona termica

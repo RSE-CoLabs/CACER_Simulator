@@ -1,0 +1,24 @@
+A_heated : 93.35   # [m^2] Fonte: TABULA PoliTO
+#A_walls: 88.52  # [m^2] Dati da modello Design Builder
+A_walls: [39.36, 0, 0, 0, 39.36, 0, 31.53, 0] # ['N','NE','E','SE','S','SW','W','NW'] Punti cardinali delle pareti in [m^2]. Fonte: TABULA POLITO; Sono valori netti (Senza finestre)
+Volume: 222.61  # [m^3] Fonte: TABULA PoliTO
+U_walls  : 1.15   # [W/(m^2*K)]   Fonte: TABULA PoliTO
+U_windows: 2.72    # [W/(m^2*K)] Fonte: URBEM Polimi
+U_roof   : 0 # 1.649   # [W/(m^2*K)] 
+U_ground : 0.94  # 1.649  # [W/(m^2*K)]
+#A_windows: 24.64  # [m^2] Dati da modello Design Builder
+A_windows: [6.08, 0, 0, 0, 6.08, 0, 0, 0]    # ['N','NE','E','SE','S','SW','W','NW'] Punti cardinali delle finestre in [m^2]. Fonte: URBEM Polito; sono valori netti (senza Divisori e telaio)
+ACR : 0.3  # 0.3
+ks_gla: 0.485  # [-] Coefficiente di trasmissione solare diretta, dati da modello Design Builder
+ks_opa: 0.028 # [-] Potrebbe essere pari al prodotto (absorbivity_d*R_se ) con absorbivity_d pari a 0.6 e R_se pari a 0.04, dati da modello Design Builder      
+ks_infra: 0.99     #   # EM aggiunta Considero il contributo dell'infrarosso, pari a (5*emissivity*Fw*R_se*deltaomega_er) con emissivity=0.9, R_se=0.04, Fw=0.5, deltaomega_er=11
+C_m_walls: 328000    # [J/K*m^2] FONTE: TABULA PoliTO e UNI TS 11552 Muratura a cassa vuota in laterizio forato con mattoni a vista forati
+C_m_roof: 525500 # 32614    # [J/K*m^2] FONTE: TABULA PoliTO e UNI TS 11552 SOLAIO IN LATEROCEMENTO - BLOCCHI COLLABORANTI ESEMPIO 1
+C_m_floor: 525500    # [J/K*m^2] FONTE: TABULA PoliTO e UNI TS 11552
+C_m_partitions: 380052 # [J/K*m^2]FONTE: TABULA PoliTO e UNI TS 11552 Muratura a cassa vuota in laterizio forato con mattoni a vista forati
+A_partitions: 31.53 # [m^2] FONTE: TABULA PoliTO
+Reflectance: 0.3    # [-] Riflettanza pareti, per il calcolo di K_s
+F_f: 1 # [-] Frazione della finestra formata da vetro DEFAULT
+C_s: 11336      # [J/K*m^2] DEFAULT
+A_s: 0   # [m^2] Superficie elementi leggeri edificio, DEFAULT
+A_window_frame: 0 # [m^2] DEFAULT

@@ -1,0 +1,4 @@
+# 8 piani, 2 appartamenti per piano
+# Il muro portante in calcestruzzo è quello a EST/OVEST
+# Solaio e pavimento sono fatti dello stesso materiale
+# La suddivisione delle finestre sui muri è in parti uguali

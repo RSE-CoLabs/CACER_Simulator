@@ -1,0 +1,5 @@
+# 7 piani, 3 appartamenti per piano
+# Il muro portante in calcestruzzo è quello a EST/OVEST, non ha finestre su quel lato
+# Solaio e pavimento sono fatti dello stesso materiale
+# La suddivisione delle finestre sui muri è in parti uguali, ma solo su due lati (nord e sud), 1/3 delle superfici finestrate è nei vani scale
+# L'edificio nel mezzo, ha due muri di partizione (il valore doppio rispetto agli altri)
