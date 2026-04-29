@@ -1,4 +1,7 @@
 from src.Functions_General import (check_file_status, clear_folder_content, add_to_recap_yml, check_folder_exists, get_calendar, location_italian_to_english)
+from src.Functions_Load_Emulator_and_DSM import *
+from src.Functions_Load_Emulator_v2 import *
+
 import pandas as pd
 import numpy as np
 import calendar
@@ -655,11 +658,16 @@ def create_coordinates_dataset(locations_input):
 
     for name_location in locations_input:
 
-        latitude_location = get_coordinates(name_location)[0]
-        longitude_location = get_coordinates(name_location)[1]
-        altitude_location = pvlib.location.lookup_altitude(latitude_location, longitude_location)
+        try:
 
-        data_location = (latitude_location, longitude_location, name_location, altitude_location, 'Etc/GMT+2')
+            latitude_location = get_coordinates(name_location)[0]
+            longitude_location = get_coordinates(name_location)[1]
+            altitude_location = pvlib.location.lookup_altitude(latitude_location, longitude_location)
+            data_location = (latitude_location, longitude_location, name_location, altitude_location, 'Etc/GMT+2')
+
+        except Exception as e:
+            print(f"Error getting coordinates for {name_location}: {e}")
+            data_location = (45.4685, 9.1824, name_location, 0, 'Etc/GMT+2')
 
         coordinates_dataset.append(data_location)
 
@@ -1867,7 +1875,8 @@ def CACER_shared_energy():
 
 def suppress_printing(func, *args, **kwargs):
     """function to suppress the printing sections of a specified function"""
-    with contextlib.redirect_stdout(io.StringIO()):
+    with contextlib.redirect_stdout(io.StringIO()),\
+         contextlib.redirect_stderr(io.StringIO()):
         return func(*args, **kwargs)
 
 ###############################################################################################################################
@@ -1946,3 +1955,33 @@ def CACER_injected_energy_optimizer():
     df_results.to_csv(config["filename_injected_energy_optimizer"])
 
     print("\nInjected energy for optimizer exported!")
+
+###############################################################################################################################
+
+def run_load_emulator():
+    
+    config = yaml.safe_load(open("config.yml", 'r'))
+    load_emulator_version = config['load_emulator_version']
+
+    if load_emulator_version == 'version_1':
+
+        flag_last_dict = False # if false we create the appliance start time dictionary; if true we import the last one created (default: False)
+        flag_optDSM = False # if true we simulate the optimized DSM case (default: False)
+        flag_all_appliance = True # if true we use all appliance for the load profile emulation (default: True)
+        flag_daily_activation = True # if false we dont'use a daily usage activation for some specified appliances (only washing machine at the moment, default: True)
+        flag_multi_use = True # if true we activate the possibility to have multiple activations for the selected appliances during the day (default: True)
+
+        run_load_emulator_v1(flag_last_dict, flag_optDSM, flag_all_appliance, flag_daily_activation, flag_multi_use)
+
+    elif load_emulator_version == 'version_2':
+
+        show_results = False
+        save_all_results = True
+        
+        run_load_emulator_v2(show_results, save_all_results)
+
+    else:
+
+        print(red('Selected load emulator version is not correct!'))
+
+###################################################################################################################

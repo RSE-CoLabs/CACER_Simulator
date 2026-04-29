@@ -18,54 +18,14 @@ import io
 from files.energy.input.DSM_optimizer.main import ott_year
 from simple_colors import *
 
+from src.Functions_General import generate_calendar_modified
+
 ###################################################################################################################
 
 # function to suppress the printing sections of a specified function
 def suppress_printing(func, *args, **kwargs):
     with contextlib.redirect_stdout(io.StringIO()):
         return func(*args, **kwargs)
-
-###################################################################################################################
-
-def generate_calendar_modified(start_day, end_day):
-    """Generate a calendar with the specified start and end dates.
-
-    Inputs:
-        start_day                  datetime, starting date to generate the calendar
-        end_day                    datetime, ending date to generate the calendar
-    
-    Outputs:
-        cal                         dataframe con datetime, working_day (0=lunedi, 6=domenica), holiday (True False) and Tariff (1,2,3)
-    """ 
-
-    print(blue("Generate calendar:\n"))
-
-    delta_t = '15Min' # we need to modify this in the future versions!!!
-
-    start_date = start_day.strftime("%Y-%m-%d")
-
-    end_day = end_day + timedelta(days=1)
-    end_date = end_day.strftime("%Y-%m-%d")
-
-    # creation of a calendar that starts from the indicated date with the indicated frequency
-    cal = pd.DataFrame({"datetime": pd.date_range(start = start_date, end = end_date, freq = delta_t)})
-    cal = cal[:-1] # delete the last row
-
-    cal['day_week'] = cal.datetime.dt.dayofweek # create day of the week column (1: monday; 2: thursday; etc.)
-    
-    it_holidays = holidays.IT() # create a list with all italian holidays
-    cal['holiday'] = cal['datetime'].apply(lambda x: x.date() in it_holidays) # create a column with the holidays (True False)
-
-    cal["day_flag"] = "Working_day" # preassigning value of working_day
-    cal.loc[cal["day_week"] == 5, "day_flag"] = "Saturday" # overwrite the saturdays
-    cal.loc[cal["day_week"] == 6, "day_flag"] = "Sunday" # overwrite the sundays
-    cal.loc[cal["holiday"], "day_flag"] = "Sunday" # overwrite the holidays, modelled as sundays
-
-    cal.drop(columns=["holiday"], inplace=True) # drop the holiday column (not necessary)
-
-    print("**** Calendar successfully created! *****")
-
-    return cal
 
 ###################################################################################################################
 
@@ -140,7 +100,11 @@ def create_appliance_start_time(num_days, calendario, flag_daily_activation = Tr
     filename_usage_probability = config['filename_usage_probability']
     usage_probability_df = pd.read_excel(filename_usage_probability, header = 0, index_col = 0, sheet_name = "daily_usage_probability") # we import usage probability for dish washer, washing machine, oven, tv e microwaves
 
+    ##########################################################################################################################################
+
     num_daily_usage_probability_df = pd.read_excel(filename_usage_probability, header = 0, index_col = 0, sheet_name = "num_of_uses") # we import daily usage probability with different number of uses
+
+    ##########################################################################################################################################
 
     week_usage_probability_df = pd.read_excel(filename_usage_probability, header = 0, index_col = 0, sheet_name = "week_usage_probability") # we import weekly usage probability
     wm_week_usage_probability_df = week_usage_probability_df.loc['washing_machines'].copy() # we extract the weekly usage probability for the washing machine
@@ -994,7 +958,7 @@ def DSM_load_profile_emulator(emulated_users_list, DSM_emulated_users_list, star
 ############################### EMULATOR FOR USERS IN USER CACER.XLSX #############################################
 ###################################################################################################################
 
-def create_emulated_users(flag_last_dict = False, flag_optDSM = False, flag_all_appliance = True, flag_daily_activation = True, flag_multi_use = True):  
+def run_load_emulator_v1(flag_last_dict = False, flag_optDSM = False, flag_all_appliance = True, flag_daily_activation = True, flag_multi_use = True):  
     """Create emulated load profile (and eventually DSM emulated load profile) for all emulated users setted in the user CACER.xlsx external file. 
 
     Inputs:

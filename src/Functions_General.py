@@ -4,7 +4,7 @@ import os
 import holidays
 from random import random
 import calendar
-from datetime import date
+from datetime import date, timedelta
 import datetime
 import yaml
 from ruamel.yaml import YAML
@@ -22,6 +22,8 @@ from ruamel.yaml import YAML
 import signal
 import psutil
 from simple_colors import *
+import contextlib
+import io
 
 ##########################################################
 
@@ -252,6 +254,48 @@ def generate_calendar():
 
 ##########################################################
 
+def generate_calendar_modified(start_day, end_day):
+    """Generate a calendar with the specified start and end dates.
+
+    Inputs:
+        start_day                  datetime, starting date to generate the calendar
+        end_day                    datetime, ending date to generate the calendar
+    
+    Outputs:
+        cal                         dataframe con datetime, working_day (0=lunedi, 6=domenica), holiday (True False) and Tariff (1,2,3)
+    """ 
+
+    print(blue("Generate calendar:\n"))
+
+    delta_t = '15Min' # we need to modify this in the future versions!!!
+
+    start_date = start_day.strftime("%Y-%m-%d")
+
+    end_day = end_day + timedelta(days=1)
+    end_date = end_day.strftime("%Y-%m-%d")
+
+    # creation of a calendar that starts from the indicated date with the indicated frequency
+    cal = pd.DataFrame({"datetime": pd.date_range(start = start_date, end = end_date, freq = delta_t)})
+    cal = cal[:-1] # delete the last row
+
+    cal['day_week'] = cal.datetime.dt.dayofweek # create day of the week column (1: monday; 2: thursday; etc.)
+    
+    it_holidays = holidays.IT() # create a list with all italian holidays
+    cal['holiday'] = cal['datetime'].apply(lambda x: x.date() in it_holidays) # create a column with the holidays (True False)
+
+    cal["day_flag"] = "Working_day" # preassigning value of working_day
+    cal.loc[cal["day_week"] == 5, "day_flag"] = "Saturday" # overwrite the saturdays
+    cal.loc[cal["day_week"] == 6, "day_flag"] = "Sunday" # overwrite the sundays
+    cal.loc[cal["holiday"], "day_flag"] = "Sunday" # overwrite the holidays, modelled as sundays
+
+    cal.drop(columns=["holiday"], inplace=True) # drop the holiday column (not necessary)
+
+    print("**** Calendar successfully created! *****")
+
+    return cal
+
+##########################################################
+
 def get_calendar():
     """ retrieves the active calendar from the file config['filename_calendar'] as a dataframe, as it is, without updating, and adjusts the datetime format
     Output:
@@ -289,6 +333,8 @@ def province_to_region():
 
     return region
 
+##########################################################
+
 def province_italian_to_english():
     """
     This function translates the province name from Italian to English, based on the file "comuni_italiani.csv" table.
@@ -303,6 +349,8 @@ def province_italian_to_english():
     province = italian_municipalities[italian_municipalities["Denominazione in italiano"] == config["provincia_it"]]["Denominazione provincia in inglese"].iloc[0]
 
     return province
+
+##########################################################
 
 def location_italian_to_english(location_it):
     """
@@ -1234,8 +1282,6 @@ def edit_surplus_repartition_scheme(value):
 
 ################################################################################################################################
 
-
-
 def plant_operation_matrix():
     """Generating the plant activity matrix, which reports the activity or inactivity for each plant in the CACER in each month time for the project lifetime, as 1 or 0.
     It is needed to check whether the plant is operational and generating energy for the community, incentives and opex.
@@ -1427,6 +1473,8 @@ def copy_folder_content(source_folder, destination_folder):
                 # recursively copy the subfolder
                 copy_folder_content(source_path, destination_path)
 
+##########################################################
+
 def save_simulation_results(simulation_name="test"):
     """Saving the main simulation results in a folder with the simulation_name, for the record"""
     
@@ -1486,3 +1534,26 @@ def setting_CACER_scenario(case_denomination, CACER_type, repartition_scheme):
     edit_incentive_repartition_scheme(repartition_scheme)
     print("**** All inputs set! ****")
 
+
+##########################################################
+
+def suppress_printing(func, *args, **kwargs):
+    """function to suppress the printing sections of a specified function"""
+    with contextlib.redirect_stdout(io.StringIO()),\
+         contextlib.redirect_stderr(io.StringIO()):
+        return func(*args, **kwargs)
+
+
+##########################################################
+
+
+
+##########################################################
+
+
+
+##########################################################
+
+
+
+##########################################################

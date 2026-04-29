@@ -1,6 +1,6 @@
 # time simulation
 start_date: 2026-01-01
-project_lifetime_yrs: 20
+project_lifetime_yrs: 1
 
 type_of_cacer: CER # CER; AUC; AID; NO_CACER
 flag_condominium_bills: True # if true all the users in the condominium pay the bill, otherwise only the admin user pays the bill
@@ -29,6 +29,9 @@ battery_derating_factor: 0.0000635 # derating factor for energy storing capacity
 
 # mercato
 market_scenario: dossier_rivisto_2 # mettere una delle tipologie di scenario possibili, vedere file fornitori.yml (pensare se modificarne il nome)
+
+# load_emulator versione 
+load_emulator_version: version_2 # it is possible to select two different versions of the load_emulator: version_1 (simplified) and version_2 (advanced)
 
 ###########
 # filename
@@ -64,12 +67,19 @@ filename_carico_input: files\\energy\\input\\curve_carico_input.xlsx # file di o
 filename_emulated_load_profile: files\\energy\\input\\emulated_load_profile.csv
 filename_DSM_emulated_load_profile: files\\energy\\input\\DSM_emulated_load_profile.csv
 
-# energy\\input\\load_emulator
+# energy\\input\\load_emulator (versione 1.0)
 filename_load_profiles_bau: files\\energy\\input\\load_emulator\\profiles_bau.csv
 filename_load_profiles_ls: files\\energy\\input\\load_emulator\\profiles_ls.csv
-filename_usage_probability: files\\energy\\input\\load_emulator\\appliance_usage_probability.xlsx
+filename_usage_probability: files\\energy\\input\\load_emulator\\input_emulator_v1\\appliance_usage_probability_v1.xlsx
 filename_appliance: files\\energy\\input\\load_emulator\\appliances\\washing machine.csv
-filename_appliances_load: files\\energy\\input\\load_emulator\\appliance_load_profile.xlsx
+filename_appliances_load: files\\energy\\input\\load_emulator\\input_emulator_v1\\appliance_load_profile_v1.xlsx
+
+# energy\\input\\load_emulator (versione 2.0)
+filename_metadata_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\0. metadata_load_emulator_v2.xlsx
+filename_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\1. usage_probability_v2.xlsx
+filename_multi_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\2. multi_usage_probability_v2.xlsx
+filename_appliances_load_profiles_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\3. appliances_load_profiles_v2.xlsx
+filename_base_load_profiles_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\4. base_load_profiles_v2.xlsx
 
 # filename incentives
 filename_CACER_incentivi: files\\incentives\\CACER_incentivi.csv
@@ -102,14 +112,14 @@ filename_FM_yearly_results_last_simulation: files\\results_finance\\yearly_resul
 filename_FM_test: files\\results_finance\\test.csv
 filename_report: files\\report.yml
 
-# filnename and folder HVAC_simulator
+# filnename and folder hvac
 folder_weather_data: files\\HVAC\\weather_data\\ # Directory weather data files
 filename_weather_data: files\\HVAC\\weather_data\\weather_data.csv # Filename weather data files
 filename_future_weather_data: files\HVAC\weather_data\weather_data_future_2020_2060.csv
 filename_weather_data_selected_years: files\HVAC\weather_data\weather_data_selected_years.csv
 folder_results_HVAC: files\\HVAC\\results_HVAC\\ # Directory to save results
-building_properties_folder: HVAC_simulator\\config\\buildings\\ # Folder building properties
-hp_properties_folder: HVAC_simulator\\config\\heat_pumps\\ # Folder heat pump properties
+building_properties_folder: src\\hvac_functions\\config\\buildings\\ # Folder building properties
+hp_properties_folder: src\\hvac_functions\\config\\heat_pumps\\ # Folder heat pump properties
 
 # filename yaml
 input_FM_yml: files\\input_FM_new.yml
