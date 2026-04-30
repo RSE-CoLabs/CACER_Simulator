@@ -1818,3 +1818,12 @@ def export_mean_profile_load_emulator_v2(stacked_df, specific_appliance = None):
     print("     **** Mean profile exported! ****")
 
 ##########################################################################
+
+def remove_specific_appliance(data_input, specific_appliance):
+    
+    data_input["df_clusters_equipment"][specific_appliance] = 0
+    data_input["df_clusters_equipment_multi"][specific_appliance] = 0
+
+    return data_input
+
+##########################################################################
