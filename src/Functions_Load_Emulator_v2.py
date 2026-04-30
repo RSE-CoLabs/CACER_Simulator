@@ -1363,8 +1363,10 @@ def plot_average_appliance_load_profile(df_user_consumption, calendar_df):
 
 def extract_df_user_consumption(dict_users, user_id, calendar_df):
     
+    # create an empty dataframe with the same index as calendar_df
     df_user_consumption = pd.DataFrame(0, index = calendar_df.index, columns = list(dict_users[user_id]['appliances'].keys())) 
 
+    # fill the dataframe with the consumption of each appliance
     for a in dict_users[user_id]['appliances'].keys():
 
         if a == 'total_consumption':
@@ -1373,8 +1375,11 @@ def extract_df_user_consumption(dict_users, user_id, calendar_df):
         if 'consumption_dataframe' in dict_users[user_id]['appliances'][a]:
             df_user_consumption[a] = dict_users[user_id]['appliances'][a]['consumption_dataframe']['appliance_consumption_kWh']
 
-    df_user_consumption['base_load'] = dict_users[user_id]['base_load']
+    # add the base load
+    if 'base_load' in dict_users[user_id].keys():
+        df_user_consumption['base_load'] = dict_users[user_id]['base_load']
 
+    # add the total consumption
     df_user_consumption['total_consumption'] = df_user_consumption.sum(axis=1)
 
     return df_user_consumption
@@ -1508,7 +1513,7 @@ def import_data_load_emulator_v2():
 
 ##########################################################################
 
-def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True):
+def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True, specific_appliance = None):
 
     if save_all_results:
         n_iterations = 11
@@ -1533,11 +1538,15 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Assign appliances to users")
 
-        dict_users = assign_equipment_to_users(num_user, dict_users, data_input['df_clusters_equipment'], data_input['df_clusters_equipment_multi'])
+        if specific_appliance is None:
 
-        # add electric_hob and dishwasher to user_0 for testing purposes
-        # dict_users['user_0']['appliances']['electric_hob'] = {}
-        # dict_users['user_0']['appliances']['dishwasher'] = {}
+            dict_users = assign_equipment_to_users(num_user, dict_users, data_input['df_clusters_equipment'], data_input['df_clusters_equipment_multi'])
+
+        else: 
+
+            for u in dict_users.keys():
+
+                dict_users[u]['appliances'] = {specific_appliance: {'number': 1},}
 
         pbar.update(1)
 
@@ -1568,8 +1577,6 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
                                        data_input['df_usage_probability_we'],
                                        pbar)
 
-        pbar.update(1)
-
         #---------------------------------------------------------------------------------------------
         # 4. Calculate scheduled consumption for appliance with "spike profiles"
         #---------------------------------------------------------------------------------------------
@@ -1586,7 +1593,9 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create base load")
 
-        dict_users = suppress_printing(create_base_load_profiles, dict_users, calendar_df, calendar_daily, data_input['dict_base_load_stats'])
+        if specific_appliance is None:
+
+            dict_users = suppress_printing(create_base_load_profiles, dict_users, calendar_df, calendar_daily, data_input['dict_base_load_stats'])
 
         pbar.update(1)
 
@@ -1596,7 +1605,9 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for appliances with continuous pattern profiles")
 
-        dict_users = suppress_printing(create_base_load_with_pattern_profiles, dict_users, data_input['list_appliances_blp'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
+        if specific_appliance is None:
+
+            dict_users = suppress_printing(create_base_load_with_pattern_profiles, dict_users, data_input['list_appliances_blp'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
 
         pbar.update(1)
 
@@ -1606,7 +1617,9 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for appliances with continuous no pattern profiles")
 
-        dict_users = suppress_printing(create_base_load_without_pattern_profiles, dict_users, data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
+        if specific_appliance is None:
+
+            dict_users = suppress_printing(create_base_load_without_pattern_profiles, dict_users, data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
 
         pbar.update(1)
 
@@ -1646,17 +1659,37 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
             suppress_printing(save_dictionary_to_pickle, dict_users, path_results_emulator + "dict_users_emulator_v2.pkl")
         
-        export_csv_evulator_v2(dict_users)
+        stacked_df = export_csv_emulator_v2(dict_users, specific_appliance)
 
         pbar.update(1)
         
         pbar.set_description("Finished")
 
-    return dict_users
+    return dict_users, stacked_df
 
 ##########################################################################
 
-def export_csv_evulator_v2(dict_users):
+def export_csv_emulator_v2(dict_users, specific_appliance):
+
+    csv_df = pd.DataFrame(index = dict_users['user_0']['appliances']['total_consumption'].index, columns = dict_users.keys())
+
+    for u in dict_users.keys():
+        csv_df[u] = dict_users[u]['appliances']['total_consumption'].copy()
+
+    config = yaml.safe_load(open("config.yml", 'r'))
+
+    if specific_appliance is None:
+        path_csv = config['foldername_result_emulator'] + "emulated_load_profile_v2.csv"
+    else:
+        path_csv = config['foldername_result_emulator'] + specific_appliance + '_emulated_load_profile_v2.csv'
+    
+    csv_df.to_csv(path_csv)
+
+    return csv_df
+
+##########################################################################
+
+def export_emulated_load_profile_v2(dict_users, specific_appliance):
 
     csv_df = pd.DataFrame(index = dict_users['user_0']['appliances']['total_consumption'].index, columns = dict_users.keys())
 
@@ -1674,12 +1707,16 @@ def export_csv_evulator_v2(dict_users):
 
     csv_df.columns = emulated_users_list
 
-    path_emulated_load_profile = config['filename_emulated_load_profile']
-    csv_df.to_csv(path_emulated_load_profile)
+    if specific_appliance is None:
+        path_csv = config['filename_emulated_load_profile']
+    else:
+        path_csv = config['filename_emulated_appliance_load_profile_v2'] + specific_appliance + '_emulated_load_profile.csv'
+    
+    csv_df.to_csv(path_csv)
 
 ##########################################################################
 
-def run_load_emulator_v2(show_results, save_all_results):
+def run_load_emulator_v2(show_results, save_all_results, specific_appliance = None):
 
     print(blue("\nCreate load profile for emulated users:", ['bold', 'underlined']), '\n')
 
@@ -1734,16 +1771,50 @@ def run_load_emulator_v2(show_results, save_all_results):
 
         print(blue("\n2. Running emulator:"), '\n')
 
-        dict_users = load_emulator_v2(num_users, 
+        dict_users, stacked_df = load_emulator_v2(num_users, 
                                 data_input, 
                                 calendar_df, 
                                 calendar_daily, 
                                 show_results, # a progress bar and some plots with results will be shown
-                                save_all_results # save the results in a pickle file, disactivate if there are too many users!!
+                                save_all_results, # save the results in a pickle file, disactivate if there are too many users!!
+                                specific_appliance
                                 )
+        
+        print("     **** Users emulated! *****")
+
+        #---------------------------------------------------------------------------------------------
+        # 3. Export results: create "files\\energy\\input\\emulated_load_profile.csv"
+        #---------------------------------------------------------------------------------------------
+
+        print(blue("\n3. Export results:"), '\n')
+
+        export_emulated_load_profile_v2(dict_users, specific_appliance)
+
+        print("     **** Results exported! *****")
 
         print("\n       **** Emulated load profiles exported! ****\n")
 
         return dict_users
+
+##########################################################################
+
+def export_mean_profile_load_emulator_v2(stacked_df, specific_appliance = None):
+    
+    mean_profile = stacked_df.mean(axis=1)
+
+    config = yaml.safe_load(open("config.yml", 'r'))
+
+    if specific_appliance is None:
+        path_csv = config['foldername_result_emulator'] + 'mean_profile_load_emulator_v2.csv'
+    else:
+        path_csv = config['foldername_result_emulator'] + specific_appliance + '_mean_profile_load_emulator_v2.csv'
+
+    mean_profile = pd.DataFrame(mean_profile)
+
+    mean_profile.columns = ['mean_profile']
+
+    mean_profile.to_csv(path_csv)
+
+    print("     **** Mean profile exported! ****")
 
 ##########################################################################

@@ -80,6 +80,7 @@ filename_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulat
 filename_multi_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\2. multi_usage_probability_v2.xlsx
 filename_appliances_load_profiles_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\3. appliances_load_profiles_v2.xlsx
 filename_base_load_profiles_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\4. base_load_profiles_v2.xlsx
+filename_emulated_appliance_load_profile_v2: files\\energy\\input\\
 
 # filename incentives
 filename_CACER_incentivi: files\\incentives\\CACER_incentivi.csv

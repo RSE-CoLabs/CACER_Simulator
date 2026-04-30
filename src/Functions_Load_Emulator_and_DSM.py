@@ -428,7 +428,7 @@ def create_all_user_load_profile(start_time_dict_1, start_time_dict_2, start_tim
 
     # export dictionary in external file
     # now = datetime.now().strftime("(%Y-%m-%d_%H-%M)")
-    with open(folder + title_flag + 'all_user_load_profile_dict.pkl', 'wb') as fp:
+    with open(folder + title_flag + 'all_user_load_profile_dict_v1.pkl', 'wb') as fp:
         pickle.dump(all_user_load_profile_dict, fp)
         print("\n**** Dictionary users load profile exported! ****\n")
 
@@ -1386,7 +1386,7 @@ def plot_all_day_appliance_load_profile(user, appliance):
     config = yaml.safe_load(open("config.yml", 'r'))
     folder = config["foldername_result_emulator"]
 
-    with open(folder + 'all_user_appliance_load_profile_dict.pkl', 'rb') as fp:
+    with open(folder + 'all_user_appliance_load_profile_dict_v1.pkl', 'rb') as fp:
         all_user_appliance_load_profile_dict = pickle.load(fp)
         print("Dictionary appliance noDSM start time imported!")
 
