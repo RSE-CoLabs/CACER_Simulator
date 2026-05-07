@@ -1558,7 +1558,7 @@ def import_data_load_emulator_v2():
 
 ##########################################################################
 
-def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True, specific_appliance = None):
+def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate_boiler = True, show_results = False, save_all_results = True, specific_appliance = None):
 
     n_iterations = 12
 
@@ -1714,11 +1714,13 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for boiler")
 
-        dict_users = suppress_printing(create_boiler_profiles, 
-                                       dict_users, 
-                                       calendar_df, 
-                                       calendar_daily, 
-                                       data_input['dict_boiler_profiles'])
+        if simulate_boiler:
+
+            dict_users = suppress_printing(create_boiler_profiles, 
+                                        dict_users, 
+                                        calendar_df, 
+                                        calendar_daily, 
+                                        data_input['dict_boiler_profiles'])
 
         pbar.update(1)
 
