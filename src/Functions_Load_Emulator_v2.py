@@ -233,7 +233,19 @@ def assign_equipment_to_users(num_user, dict_users, df_clusters_equipment, df_cl
 
 ##########################################################################
 
-def create_daily_activation_matrix(dict_users, calendar_daily, dict_multi_usage_probability, show_progress = False):
+def monthly_activation_probability(appliance, df_monthly_usage_probability, calendar_daily):
+
+    prob_on = df_monthly_usage_probability.loc[appliance][calendar_daily.index[0].month]
+
+    options = [0, 1] 
+    prob = [1 - prob_on, prob_on]
+    activation_flag = int(np.random.choice(options, p=prob))
+
+    return activation_flag
+
+##########################################################################
+
+def create_daily_activation_matrix(dict_users, calendar_daily, dict_multi_usage_probability, df_monthly_usage_probability, show_progress = False):
 
     # - user id:{
     #       - cluster: {}
@@ -258,18 +270,42 @@ def create_daily_activation_matrix(dict_users, calendar_daily, dict_multi_usage_
 
                 dict_users[u]['appliances'][a]['daily_activation_matrix'] = daily_activation_matrix.copy()
 
+                # create a matrix with two columns: activation_flag and number_of_activation
                 matrix = np.zeros((calendar_daily.shape[0], 2))
 
                 for day in range(calendar_daily.shape[0]):
-            
+                    
+                    #----------------------------------------------------------------------------
+
+                    # extract daily usage probability
                     day_type = daily_activation_matrix.iloc[day]['day_type']
 
                     options = dict_multi_usage_probability[day_type][a].index 
                     prob = list(dict_multi_usage_probability[day_type][a].values)
                     num_activation = int(np.random.choice(options, p=prob))
 
+                    #----------------------------------------------------------------------------
+
+                    # check monthly activation
+                    monthly_activation_flag = monthly_activation_probability(a, df_monthly_usage_probability, calendar_daily)
+                    num_activation = num_activation * monthly_activation_flag
+
+                    #----------------------------------------------------------------------------
+
+                    # check consistency washing machine and dryer activation:
+                    if a == 'washing_machine' and 'dryer' in dict_users['user_0']['appliances'].keys():
+                        if dict_users[u]['appliances']['dryer']['daily_activation_matrix']['activation_flag'][day]:         
+                            num_activation_dryer = dict_users['user_0']['appliances']['dryer']['daily_activation_matrix']['number_of_activation'][day]
+                            num_activation = max(num_activation, num_activation_dryer)
+    
+                    #----------------------------------------------------------------------------
+
+                    # save in matrix [flag_activation, num_activation]
                     matrix[day] = [(num_activation != 0), num_activation]
 
+                    #----------------------------------------------------------------------------
+
+                # save matrix in dict_users
                 dict_users[u]['appliances'][a]['daily_activation_matrix']['activation_flag'] = matrix[:, 0]
                 dict_users[u]['appliances'][a]['daily_activation_matrix']['number_of_activation'] = matrix[:, 1]
 
@@ -1428,6 +1464,7 @@ def import_data_load_emulator_v2():
     path_multi_usage_probability = config['filename_multi_usage_probability_v2']
     path_appliances_load_profiles = config['filename_appliances_load_profiles_v2']
     path_base_load_profiles = config['filename_base_load_profiles_v2']
+    path_boiler_profiles = config['filename_boiler_profiles_v2']
 
     results = {}
 
@@ -1483,6 +1520,12 @@ def import_data_load_emulator_v2():
     df_monthly_usage_probability = dict_metadata_load_emulator['monthly_usage_probability']
 
     #---------------------------------------------------------------------------------------------
+    # 6. Import boiler profiles
+    #---------------------------------------------------------------------------------------------
+
+    dict_boiler_profiles = pd.read_excel(path_boiler_profiles, sheet_name = None, index_col = 0)
+
+    #---------------------------------------------------------------------------------------------
     # 6. Return all results
     #---------------------------------------------------------------------------------------------
 
@@ -1507,7 +1550,9 @@ def import_data_load_emulator_v2():
                'df_clusters_equipment': df_clusters_equipment,
                'df_clusters_equipment_multi': df_clusters_equipment_multi,
                
-               'df_monthly_usage_probability': df_monthly_usage_probability}
+               'df_monthly_usage_probability': df_monthly_usage_probability,
+               
+               'dict_boiler_profiles': dict_boiler_profiles}
     
     return results
 
@@ -1515,10 +1560,7 @@ def import_data_load_emulator_v2():
 
 def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True, specific_appliance = None):
 
-    if save_all_results:
-        n_iterations = 11
-    else:
-        n_iterations = 10
+    n_iterations = 12
 
     with tqdm(total=n_iterations) as pbar:
 
@@ -1556,7 +1598,12 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create daily activation matrix")
 
-        dict_users = suppress_printing(create_daily_activation_matrix, dict_users, calendar_daily, data_input['dict_multi_usage_probability'])
+        dict_users = suppress_printing(create_daily_activation_matrix, 
+                                       dict_users, 
+                                       calendar_daily, 
+                                       data_input['dict_multi_usage_probability'], 
+                                       data_input['df_monthly_usage_probability'], 
+                                       )
 
         pbar.update(1)
 
@@ -1583,7 +1630,15 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for appliances with spike profiles")
 
-        dict_users = suppress_printing(create_spike_profiles, dict_users, data_input['list_appliances_sp'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df, calendar_daily, data_input['df_usage_probability_wd'], data_input['df_usage_probability_we'])
+        dict_users = suppress_printing(create_spike_profiles, 
+                                       dict_users, 
+                                       data_input['list_appliances_sp'], 
+                                       data_input['dict_appliances_load'], 
+                                       data_input['dict_appliances_load_info'], 
+                                       calendar_df, 
+                                       calendar_daily, 
+                                       data_input['df_usage_probability_wd'], 
+                                       data_input['df_usage_probability_we'])
 
         pbar.update(1)
 
@@ -1595,7 +1650,11 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         if specific_appliance is None:
 
-            dict_users = suppress_printing(create_base_load_profiles, dict_users, calendar_df, calendar_daily, data_input['dict_base_load_stats'])
+            dict_users = suppress_printing(create_base_load_profiles, 
+                                           dict_users, 
+                                           calendar_df, 
+                                           calendar_daily, 
+                                           data_input['dict_base_load_stats'])
 
         pbar.update(1)
 
@@ -1607,7 +1666,12 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         if specific_appliance is None:
 
-            dict_users = suppress_printing(create_base_load_with_pattern_profiles, dict_users, data_input['list_appliances_blp'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
+            dict_users = suppress_printing(create_base_load_with_pattern_profiles, 
+                                           dict_users, 
+                                           data_input['list_appliances_blp'], 
+                                           data_input['dict_appliances_load'], 
+                                           data_input['dict_appliances_load_info'], 
+                                           calendar_df)
 
         pbar.update(1)
 
@@ -1619,7 +1683,11 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         if specific_appliance is None:
 
-            dict_users = suppress_printing(create_base_load_without_pattern_profiles, dict_users, data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
+            dict_users = suppress_printing(create_base_load_without_pattern_profiles, 
+                                           dict_users, 
+                                           data_input['dict_appliances_load'], 
+                                           data_input['dict_appliances_load_info'], 
+                                           calendar_df)
 
         pbar.update(1)
 
@@ -1629,12 +1697,35 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for lighting")
 
-        dict_users = suppress_printing(create_light_profiles, dict_users, calendar_df, calendar_daily, data_input['df_usage_probability_wd'], data_input['df_usage_probability_we'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'])
+        dict_users = suppress_printing(create_light_profiles, 
+                                       dict_users, 
+                                       calendar_df, 
+                                       calendar_daily, 
+                                       data_input['df_usage_probability_wd'], 
+                                       data_input['df_usage_probability_we'], 
+                                       data_input['dict_appliances_load'], 
+                                       data_input['dict_appliances_load_info'])
 
         pbar.update(1)
 
         #---------------------------------------------------------------------------------------------
-        # 9. Calculate total consumption for each user
+        # 9. Calculate scheduled consumption for boiler
+        #---------------------------------------------------------------------------------------------
+
+        pbar.set_description("Create consumption for boiler")
+
+        dict_users = suppress_printing(create_boiler_profiles, 
+                                       dict_users, 
+                                       calendar_df, 
+                                       calendar_daily, 
+                                       data_input['dict_boiler_profiles'])
+
+        pbar.update(1)
+
+        #---------------------------------------------------------------------------------------------
+        #---------------------------------------------------------------------------------------------
+        # 10. Calculate total consumption for each user
+        #---------------------------------------------------------------------------------------------
         #---------------------------------------------------------------------------------------------
 
         pbar.set_description("Aggregate load profile")
@@ -1647,7 +1738,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
         pbar.update(1)
 
         #---------------------------------------------------------------------------------------------
-        # 10. Save results
+        # 11. Save results
         #---------------------------------------------------------------------------------------------
 
         pbar.set_description("Save results")
@@ -1825,5 +1916,116 @@ def remove_specific_appliance(data_input, specific_appliance):
     data_input["df_clusters_equipment_multi"][specific_appliance] = 0
 
     return data_input
+
+##########################################################################
+
+def scheduling_boiler(user_id, dict_users, calendar_df, calendar_daily, dict_boiler_profiles):
+
+        eta = dict_users[user_id]['appliances']['boiler']['efficiency']
+
+        list_boiler = []
+        
+        for i in dict_boiler_profiles.keys():
+                list_boiler.append(i[:-3])
+
+        list_boiler = list(set(list_boiler))
+
+        options = list_boiler
+        probs = [1/len(list_boiler)] * len(list_boiler)
+
+        assigned_boiler = str(np.random.choice(options, p=probs))
+
+        df_stats_wd = dict_boiler_profiles[assigned_boiler + '_wd'] 
+        df_stats_we = dict_boiler_profiles[assigned_boiler + '_we']
+
+        dict_stats = {
+        'working_day': df_stats_wd,
+        'weekend': df_stats_we
+        }
+
+        print(blue((f"{user_id}"), ['bold']))
+
+        dict_users[user_id]['appliances']['boiler']['consumption_dataframe'] = {}
+
+        df_boiler_load = pd.DataFrame(0, index = calendar_df.index, columns = ['thermal_load_consumption_kWh', 'appliance_consumption_kWh'])
+
+        t = 0
+
+        for day in range(calendar_daily.shape[0]):
+
+                day_date = calendar_daily.index[day] # date of the current day
+                day_type = calendar_daily.iloc[day]['day_type'] # day type (working day or weekend) for the current day
+
+                mean_profile = dict_stats[day_type]['mean']
+                std_profile = dict_stats[day_type]['std']
+                upper_bound = dict_stats[day_type]['upper']
+                lower_bound = dict_stats[day_type]['lower']
+                
+                boiler_load_extracted = np.random.normal(mean_profile, std_profile)
+                boiler_load_extracted = boiler_load_extracted.clip(0) # convert from Wh to kWh
+
+                df_boiler_load.iloc[t : t + 96, df_boiler_load.columns.get_loc('thermal_load_consumption_kWh')] += boiler_load_extracted
+
+                t += 96
+        
+        df_boiler_load['appliance_consumption_kWh'] = df_boiler_load['thermal_load_consumption_kWh'] / eta
+
+        dict_users[user_id]['appliances']['boiler']['consumption_dataframe'] = df_boiler_load.copy()
+
+        print(green(f"\n      **** Boiler profiles created ****"))
+
+        print("\n---------------------------------------------------------------------------------------------\n")
+
+        return dict_users
+
+##########################################################################
+
+def create_boiler_profiles(dict_users, calendar_df, calendar_daily, dict_boiler_profiles):
+    
+    i = 0
+
+    for u, user_id in enumerate(dict_users.keys()):
+
+            print(blue((f"\n{user_id}"), ['bold']))
+
+            if 'boiler' not in dict_users[user_id]['appliances'].keys():
+                    
+                continue
+                
+            else:
+                
+                i+=1
+
+                print('\n', (f"{i}. Creating scheduling matrix for:"), blue('boiler'), '\n')
+
+                dict_users[user_id]['appliances']['boiler'] = {}
+
+                eta = round(np.random.normal(0.97, 0.01), 2)
+
+                print(f"   - Efficiency: {eta * 100} %\n")
+
+                dict_users[user_id]['appliances']['boiler']['efficiency'] = eta
+
+                dict_users = suppress_printing(scheduling_boiler, user_id, dict_users, calendar_df, calendar_daily, dict_boiler_profiles)
+
+                print(f"   - Mean daily consumption: {round(dict_users[user_id]['appliances']['boiler']['consumption_dataframe']['appliance_consumption_kWh'].sum() / calendar_daily.shape[0], 2)} kWh\n")
+
+    return dict_users
+
+##########################################################################
+
+
+
+##########################################################################
+
+
+
+##########################################################################
+
+
+
+##########################################################################
+
+
 
 ##########################################################################
