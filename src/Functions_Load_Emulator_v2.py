@@ -1,5 +1,6 @@
 
 import math
+import sys
 import numpy as np
 import pandas as pd
 from simple_colors import blue, green, red
@@ -10,7 +11,7 @@ import yaml
 import plotly.express as px
 import plotly.graph_objects as go
 
-from src.Functions_General import generate_calendar_modified, suppress_printing
+from src.Functions_General import generate_calendar_modified, suppress_printing, suppress_printing_keep_tqdm
 
 ##########################################################################
 
@@ -419,18 +420,22 @@ def create_scheduling(appliance_extracted,
     return df_scheduling, last_scheduling, last_date_new, last_time_new
 
 ##########################################################################
+import time 
 
-def scheduling_duty_cycle_appliances(user_id,
-                            appliance,
-                            dict_users,
-                            dict_appliances_load,
-                            dict_appliances_load_info,
-                            calendar_df,
-                            calendar_daily,
-                            df_usage_probability_wd,
-                            df_usage_probability_we,
-                            strength = 2,
-                            ):
+def scheduling_duty_cycle_appliances(
+    user_id,
+    appliance,
+    dict_users,
+    dict_appliances_load,
+    dict_appliances_load_info,
+    calendar_df,
+    calendar_daily,
+    df_usage_probability_wd,
+    df_usage_probability_we,
+    strength=2,
+    max_seconds=None,
+    start_time=None
+):
 
     df = dict_users[user_id]['appliances'][appliance]['daily_activation_matrix'] # daily activation matrix for the specific user and appliance
 
@@ -454,6 +459,9 @@ def scheduling_duty_cycle_appliances(user_id,
 
     for day in range(calendar_daily.shape[0]):
         
+        if max_seconds is not None and start_time is not None:
+            if time.monotonic() - start_time > max_seconds:
+                raise TimeoutError(f"Timeout su {user_id} - {appliance}")
         # if the activation flag is false, we set the last time to 00:00:00, otherwise we extract the load profile and the activation time for the specific day 
         # (because there aren't activations for the current day, so we can reset the last time to 00:00:00, otherwise we need to keep track of the last time of activation to avoid extracting a timestep for activation that is before the last activation time)
         if df.iloc[day]['activation_flag'] == False:
@@ -484,6 +492,10 @@ def scheduling_duty_cycle_appliances(user_id,
 
             # iterate over the number of activations for the current day
             for n in range(num_activation):
+                if max_seconds is not None and start_time is not None:
+                    if time.monotonic() - start_time > max_seconds:
+                        raise TimeoutError(f"Timeout su {user_id} - {appliance}")
+            
 
                 print("\n     - Activation number:", str(n + 1))
 
@@ -838,6 +850,172 @@ def create_dc_profiles(dict_users, list_appliances_dc, dict_appliances_load, dic
 
 ##########################################################################
 
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import os
+import copy
+
+
+def _create_dc_profiles_single_user(args):
+    (
+        user_id,
+        user_data,
+        list_appliances_dc,
+        dict_appliances_load,
+        dict_appliances_load_info,
+        calendar_df,
+        calendar_daily,
+        df_usage_probability_wd,
+        df_usage_probability_we
+    ) = args
+
+
+    import time
+
+    MAX_SECONDS_PER_APPLIANCE = 60
+    MAX_ITERATIONS = 20
+
+    user_data = copy.deepcopy(user_data)
+
+    logs = []
+    logs.append(f"\nUSER: {user_id}")
+
+    i = 0
+
+    for appliance in user_data["appliances"].keys():
+
+        if appliance not in list_appliances_dc:
+            continue
+
+        i += 1
+        logs.append(f"{i}. Creating scheduling matrix for: {appliance}")
+
+        count_error = 1
+        iteration = 0
+        df_scheduling = None
+
+        start_appliance_time = time.monotonic()
+
+        while count_error != 0 and iteration < MAX_ITERATIONS:
+
+            if time.monotonic() - start_appliance_time > MAX_SECONDS_PER_APPLIANCE:
+                logs.append(
+                    f"SKIPPED - {user_id} - {appliance} superati {MAX_SECONDS_PER_APPLIANCE} secondi"
+                )
+                break
+
+            temp_dict_users = {user_id: user_data}
+
+            try:
+                df_scheduling, count_error = suppress_printing(
+                    scheduling_duty_cycle_appliances,
+                    user_id,
+                    appliance,
+                    temp_dict_users,
+                    dict_appliances_load,
+                    dict_appliances_load_info,
+                    calendar_df,
+                    calendar_daily,
+                    df_usage_probability_wd,
+                    df_usage_probability_we,
+                    strength=2,
+                    max_seconds=MAX_SECONDS_PER_APPLIANCE,
+                    start_time=start_appliance_time
+                )
+            except TimeoutError:
+                logs.append(f"TIMEOUT - {user_id} - {appliance}")
+                break
+            except Exception as e:
+                logs.append(f"ERROR - {user_id} - {appliance}: {e}")
+                break
+
+            iteration += 1
+
+
+        if df_scheduling is not None:
+            user_data["appliances"][appliance]["consumption_dataframe"] = df_scheduling.copy()
+        else:
+            user_data["appliances"][appliance]["consumption_dataframe"] = pd.DataFrame(
+                0,
+                index=calendar_df.index,
+                columns=["appliance_consumption_kWh"]
+            )
+
+        if count_error == 0:
+            logs.append(f"OK - {appliance} created with no errors")
+        else:
+            logs.append(f"WARNING - {appliance} created with {count_error} errors")
+
+    return user_id, user_data, logs
+
+###########################################################################
+
+def create_dc_profiles_parallel(
+    dict_users,
+    list_appliances_dc,
+    dict_appliances_load,
+    dict_appliances_load_info,
+    calendar_df,
+    calendar_daily,
+    df_usage_probability_wd,
+    df_usage_probability_we,
+    pbar=None,
+    max_workers=None
+):
+
+    if max_workers is None:
+        max_workers = max(1, os.cpu_count() - 1)
+
+    n_users = len(dict_users)
+
+    tasks = []
+    for user_id, user_data in dict_users.items():
+        tasks.append((
+            user_id,
+            user_data,
+            list_appliances_dc,
+            dict_appliances_load,
+            dict_appliances_load_info,
+            calendar_df,
+            calendar_daily,
+            df_usage_probability_wd,
+            df_usage_probability_we
+        ))
+
+    results_users = {}
+
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(_create_dc_profiles_single_user, task) for task in tasks]
+
+        with tqdm(
+            total=n_users,
+            desc="Create DC profiles users",
+            leave=False,
+            file=sys.stderr,
+            dynamic_ncols=False
+        ) as user_pbar:
+
+            for k, future in enumerate(as_completed(futures), start=1):
+                user_id, user_data, logs = future.result()
+
+                results_users[user_id] = user_data
+
+                user_pbar.set_description(
+                    f"Create DC profiles - completed {k}/{n_users} - last user: {user_id}",
+                    refresh=False
+                )
+                user_pbar.update(1)
+
+    if pbar is not None:
+        pbar.set_description(
+            "Create consumption for appliances with duty cycle profiles",
+            refresh=False
+        )
+        pbar.update(1)
+
+    return results_users
+
+###########################################################################
+
 def create_spike_profiles(dict_users, list_appliances_sp, dict_appliances_load, dict_appliances_load_info, calendar_df, calendar_daily, df_usage_probability_wd, df_usage_probability_we):
     for u, user_id in enumerate(dict_users.keys()):
 
@@ -973,6 +1151,154 @@ def create_base_load_with_pattern_profiles(dict_users, list_appliances_blp, dict
 
     return dict_users
 
+
+def _create_base_load_with_pattern_single_user(args):
+    (
+        user_id,
+        user_data,
+        list_appliances_blp,
+        dict_appliances_load,
+        dict_appliances_load_info,
+        calendar_df
+    ) = args
+
+    user_data = copy.deepcopy(user_data)
+
+    logs = []
+    logs.append(f"\nUSER: {user_id}")
+
+    i = 0
+
+    for appliance in user_data["appliances"].keys():
+
+        if appliance not in list_appliances_blp:
+            continue
+
+        i += 1
+        logs.append(f"{i}. Creating base load with pattern for: {appliance}")
+
+        temp_dict_users = {user_id: user_data}
+
+        list_appliances = list(dict_appliances_load_info[appliance].keys())
+
+        appliance_extracted, temp_dict_users = extract_appliance(
+            list_appliances,
+            user_id,
+            appliance,
+            temp_dict_users
+        )
+
+        user_data = temp_dict_users[user_id]
+
+        df_consumption = pd.DataFrame(
+            0,
+            index=calendar_df.index,
+            columns=[
+                "on_cycle",
+                "off_cycle",
+                "load_profile_extracted",
+                "appliance_consumption_kWh"
+            ]
+        )
+
+        last_scheduling = calendar_df.index[0]
+        t = 0
+
+        while t < len(calendar_df.index):
+
+            df_consumption, last_activation, t = suppress_printing(
+                create_on_cycle,
+                df_consumption,
+                last_scheduling,
+                t,
+                appliance_extracted,
+                appliance,
+                dict_appliances_load,
+                dict_appliances_load_info,
+                calendar_df
+            )
+
+            df_consumption, last_activation_oc, t = suppress_printing(
+                create_off_cycle,
+                df_consumption,
+                last_activation,
+                t,
+                appliance_extracted,
+                dict_appliances_load,
+                calendar_df
+            )
+
+            last_scheduling = last_activation_oc + timedelta(minutes=15)
+
+        user_data["appliances"][appliance]["consumption_dataframe"] = df_consumption.copy()
+
+        logs.append(f"OK - {appliance} created")
+
+    return user_id, user_data, logs
+
+
+def create_base_load_with_pattern_profiles_parallel(
+    dict_users,
+    list_appliances_blp,
+    dict_appliances_load,
+    dict_appliances_load_info,
+    calendar_df,
+    max_workers=None,
+    show_user_progress=True
+):
+
+    if max_workers is None:
+        max_workers = max(1, os.cpu_count() - 1)
+
+    n_users = len(dict_users)
+
+    tasks = []
+
+    for user_id, user_data in dict_users.items():
+        tasks.append((
+            user_id,
+            user_data,
+            list_appliances_blp,
+            dict_appliances_load,
+            dict_appliances_load_info,
+            calendar_df
+        ))
+
+    results_users = {}
+
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+
+        futures = [
+            executor.submit(_create_base_load_with_pattern_single_user, task)
+            for task in tasks
+        ]
+
+        with tqdm(
+            total=n_users,
+            desc="Create BLP profiles users",
+            leave=False,
+            file=sys.stderr,
+            disable=not show_user_progress
+        ) as user_pbar:
+
+            for k, future in enumerate(as_completed(futures), start=1):
+
+                user_id, user_data, logs = future.result()
+
+                results_users[user_id] = user_data
+
+                user_pbar.set_description(
+                    f"Create BLP profiles - completed {k}/{n_users} - last user: {user_id}",
+                    refresh=False
+                )
+                user_pbar.update(1)
+
+    return results_users
+
+
+
+
+
 ##########################################################################
 
 def create_base_load_without_pattern_profiles(dict_users, dict_appliances_load, dict_appliances_load_info, calendar_df, show_progress = False):
@@ -1015,6 +1341,131 @@ def create_base_load_without_pattern_profiles(dict_users, dict_appliances_load, 
     return dict_users
 
 ##########################################################################
+
+def _create_base_load_without_pattern_single_user(args):
+    (
+        user_id,
+        user_data,
+        dict_appliances_load,
+        dict_appliances_load_info,
+        calendar_df
+    ) = args
+
+    user_data = copy.deepcopy(user_data)
+
+    logs = []
+    logs.append(f"\nUSER: {user_id}")
+
+    i_appliance = 0
+
+    for appliance in user_data["appliances"].keys():
+
+        if appliance not in ["internet_router"]:
+            continue
+
+        i_appliance += 1
+        logs.append(f"{i_appliance}. Creating base load without pattern for: {appliance}")
+
+        temp_dict_users = {user_id: user_data}
+
+        list_appliances = list(dict_appliances_load_info[appliance].keys())
+
+        appliance_extracted, temp_dict_users = extract_appliance(
+            list_appliances,
+            user_id,
+            appliance,
+            temp_dict_users
+        )
+
+        user_data = temp_dict_users[user_id]
+
+        df_consumption = pd.DataFrame(
+            0,
+            index=calendar_df.index,
+            columns=["appliance_consumption_kWh"]
+        )
+
+        mean = float(dict_appliances_load[appliance_extracted].loc["mean"][0])
+        std = float(dict_appliances_load[appliance_extracted].loc["std"][0])
+
+        for timestamp in df_consumption.index:
+            consumption_extracted = generate_random_value(mean, std)
+            df_consumption.loc[timestamp, "appliance_consumption_kWh"] = consumption_extracted
+
+        user_data["appliances"][appliance]["consumption_dataframe"] = df_consumption.copy()
+
+        logs.append(f"OK - {appliance} created")
+
+    return user_id, user_data, logs
+
+
+#########################################################################
+
+def create_base_load_without_pattern_profiles_parallel(
+    dict_users,
+    dict_appliances_load,
+    dict_appliances_load_info,
+    calendar_df,
+    max_workers=None,
+    show_user_progress=True
+):
+
+    if max_workers is None:
+        max_workers = max(1, os.cpu_count() - 1)
+
+    n_users = len(dict_users)
+
+    tasks = []
+
+    for user_id, user_data in dict_users.items():
+        tasks.append((
+            user_id,
+            user_data,
+            dict_appliances_load,
+            dict_appliances_load_info,
+            calendar_df
+        ))
+
+    results_users = {}
+
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+
+        futures = [
+            executor.submit(_create_base_load_without_pattern_single_user, task)
+            for task in tasks
+        ]
+
+        with tqdm(
+            total=n_users,
+            desc="Create BLNP profiles users",
+            leave=False,
+            file=sys.stderr,
+            disable=not show_user_progress
+        ) as user_pbar:
+
+            for k, future in enumerate(as_completed(futures), start=1):
+
+                user_id, user_data, logs = future.result()
+
+                results_users[user_id] = user_data
+
+                user_pbar.set_description(
+                    f"Create BLNP profiles - completed {k}/{n_users} - last user: {user_id}",
+                    refresh=False
+                )
+                user_pbar.update(1)
+
+    return results_users
+
+
+###########################################################################
+
+
+
+
+
+
+
 
 def scheduling_light(dict_users, user_id, calendar_df, calendar_daily, df_usage_probability_wd, df_usage_probability_we, dict_appliances_load, dict_appliances_load_info):
 
@@ -1513,7 +1964,7 @@ def import_data_load_emulator_v2():
 
 ##########################################################################
 
-def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True, specific_appliance = None):
+def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
 
     if save_all_results:
         n_iterations = 11
@@ -1566,16 +2017,36 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         pbar.set_description("Create consumption for appliances with duty cycle profiles")
 
-        dict_users = suppress_printing(create_dc_profiles, 
-                                       dict_users, 
-                                       data_input['list_appliances_dc'], 
-                                       data_input['dict_appliances_load'], 
-                                       data_input['dict_appliances_load_info'], 
-                                       calendar_df, 
-                                       calendar_daily, 
-                                       data_input['df_usage_probability_wd'], 
-                                       data_input['df_usage_probability_we'],
-                                       pbar)
+        # ---------------------------------------------------------------------------------------------
+        # Create consumption for appliances with duty cycle profiles
+        # ---------------------------------------------------------------------------------------------
+
+        dc_args = (
+            dict_users,
+            data_input['list_appliances_dc'],
+            data_input['dict_appliances_load'],
+            data_input['dict_appliances_load_info'],
+            calendar_df,
+            calendar_daily,
+            data_input['df_usage_probability_wd'],
+            data_input['df_usage_probability_we'],
+            pbar
+        )
+
+        if parallelize:
+            # Modifica PAOLO 07/05:
+            # parallelizzazione della creazione dei profili duty cycle,
+            # parte più time-consuming del processo di emulazione.
+            dict_users = suppress_printing_keep_tqdm(
+                create_dc_profiles_parallel,
+                *dc_args,
+                max_workers
+            )
+        else:
+            dict_users = suppress_printing(
+                create_dc_profiles,
+                *dc_args
+            )
 
         #---------------------------------------------------------------------------------------------
         # 4. Calculate scheduled consumption for appliance with "spike profiles"
@@ -1607,7 +2078,26 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         if specific_appliance is None:
 
-            dict_users = suppress_printing(create_base_load_with_pattern_profiles, dict_users, data_input['list_appliances_blp'], data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
+            if parallelize:
+                dict_users = suppress_printing_keep_tqdm(
+                    create_base_load_with_pattern_profiles_parallel,
+                    dict_users,
+                    data_input['list_appliances_blp'],
+                    data_input['dict_appliances_load'],
+                    data_input['dict_appliances_load_info'],
+                    calendar_df,
+                    max_workers,
+                    show_user_progress=True
+                )
+            else:
+                dict_users = suppress_printing(
+                    create_base_load_with_pattern_profiles,
+                    dict_users,
+                    data_input['list_appliances_blp'],
+                    data_input['dict_appliances_load'],
+                    data_input['dict_appliances_load_info'],
+                    calendar_df
+                )
 
         pbar.update(1)
 
@@ -1619,8 +2109,25 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, show_res
 
         if specific_appliance is None:
 
-            dict_users = suppress_printing(create_base_load_without_pattern_profiles, dict_users, data_input['dict_appliances_load'], data_input['dict_appliances_load_info'], calendar_df)
-
+            if parallelize:
+                dict_users = suppress_printing_keep_tqdm(
+                    create_base_load_without_pattern_profiles_parallel,
+                    dict_users,
+                    data_input['dict_appliances_load'],
+                    data_input['dict_appliances_load_info'],
+                    calendar_df,
+                    max_workers,
+                    show_user_progress=True
+                )
+            else:
+                dict_users = suppress_printing(
+                    create_base_load_without_pattern_profiles,
+                    dict_users,
+                    data_input['dict_appliances_load'],
+                    data_input['dict_appliances_load_info'],
+                    calendar_df
+                )
+                
         pbar.update(1)
 
         #---------------------------------------------------------------------------------------------

@@ -1546,6 +1546,13 @@ def suppress_printing(func, *args, **kwargs):
 
 ##########################################################
 
+def suppress_printing_keep_tqdm(func, *args, **kwargs):
+    """
+    Silenzia i print su stdout, ma lascia visibile tqdm su stderr.
+    """
+    with open(os.devnull, "w") as devnull:
+        with contextlib.redirect_stdout(devnull):
+            return func(*args, **kwargs)
 
 
 ##########################################################
