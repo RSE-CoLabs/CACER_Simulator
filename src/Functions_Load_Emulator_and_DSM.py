@@ -236,7 +236,7 @@ def create_all_user_appliance_start_time(emulated_users_list, num_days, calendar
     all_user_appliance_start_time_dict = {}
 
     # we create the start time for the appliance for each user
-    for id_user in tqdm(emulated_users_list):
+    for id_user in tqdm(emulated_users_list, desc = "Generate all user appliance start time"):
         
         output = create_appliance_start_time(num_days, calendario, flag_daily_activation, flag_multi_use)
 
@@ -406,7 +406,7 @@ def create_all_user_load_profile(start_time_dict_1, start_time_dict_2, start_tim
         # List of all appliances. The order of the appliances needs to be equal to the order of the columns in appliance_load_df to work correctly.
         appliances_list = ["electricity_mains", "fridge", "microwaves", "tv", "oven"]
 
-    for id_user in tqdm(emulated_users_list):
+    for id_user in tqdm(emulated_users_list, desc = "Generate all user load profile"):
         
         start_time_df_1 = start_time_dict_1[id_user] # we extract the start time for the first use of the appliance for the user under exam
         start_time_df_2 = start_time_dict_2[id_user] # we extract the start time for the second use of the appliance for the user under exam
@@ -517,7 +517,7 @@ def create_all_user_appliance_load_profile(start_time_dict, emulated_users_list,
 
     all_user_appliance_load_profile_dict = {} # we create a dict with all appliance load profile for each day for all the users under exam
 
-    for id_user in tqdm(emulated_users_list):
+    for id_user in tqdm(emulated_users_list, desc = "Generate all user appliances load profile"):
         
         start_time_df = start_time_dict[id_user] # we extract the start time df for the appliance for the user under exam
 
@@ -563,7 +563,7 @@ def create_single_user_load_profile_df(all_user_load_profile_dict, calendario, f
 
     all_user_df = pd.DataFrame() # we create a df to save all load profile for each days for every users (timesteps on rows and user_id on columns)
 
-    for user in tqdm(all_user_load_profile_dict.keys()):
+    for user in tqdm(all_user_load_profile_dict.keys(), desc = "Generate single user load profile df"):
 
         df_load_profile_user = all_user_load_profile_dict[user].copy() # we extract the df_load_profile_user for the user under exam
 
@@ -672,7 +672,7 @@ def create_all_user_appliance_DSM_start_time(DSM_emulated_users_list, num_days, 
     ##################################################################################################
     ##################################################################################################
 
-    for user in tqdm(DSM_emulated_users_list):
+    for user in tqdm(DSM_emulated_users_list, desc = "Generate all user appliance DSM start time"):
 
         for appliance in appliances_flex_list:
 
@@ -1542,7 +1542,7 @@ def extract_single_appliance_df(appliance, calendar, all_user_appliance_load_pro
 
     all_user_df = pd.DataFrame() # we create a df to save all load profile for each days for every users (timesteps on rows and user_id on columns)
 
-    for user in tqdm(all_user_appliance_load_profile_dict.keys()):
+    for user in tqdm(all_user_appliance_load_profile_dict.keys(), desc = "Extracting load profile for " + appliance + " for all users..."):
 
         df = all_user_appliance_load_profile_dict[user][appliance].copy()
 

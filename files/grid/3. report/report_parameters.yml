@@ -1,0 +1,6 @@
+filename_output: Report_reference_case
+heading: 'Report Power Flow Simulation:'
+network_name: network_base
+results_dict: all_results_ref_case.pkl
+show_flag: false
+show_report: false

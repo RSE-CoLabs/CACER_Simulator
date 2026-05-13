@@ -9,7 +9,7 @@ import datetime
 import yaml
 from ruamel.yaml import YAML
 import xlwings as xw
-# from xlwings.constants import DeleteShiftDirection
+from xlwings.constants import DeleteShiftDirection
 import sys
 import time
 import csv
@@ -929,33 +929,6 @@ def update_irr_on_recap_yml(user,irr_value):
     with open(config['filename_recap'], 'w') as f:
         yaml.safe_dump(recap, f)
 
-################################################################################################################################
-# UNNEEDED
-# def add_to_config_yml(key,value):
-#     #dati utili per report
-#     config = yaml.safe_load(open("config.yml", 'r'))
-    
-#     # modifichiamo quello che ci serve
-#     config[key] = value
-
-#     # salviamo
-#     with open("config.yml", 'w') as f:
-#         yaml.safe_dump(config, f)
-
-###############################################################################################################################
-# UNNEEDED
-# def add_to_file_yml(path, filename, key, value):
-       
-#     #importiamo
-#     diz = yaml.safe_load(open(path + filename, 'r'))
-    
-#     # modifichiamo quello che ci serve
-#     diz[key] = value
-
-#     # salviamo
-#     with open(path + filename, 'w') as f:
-#         yaml.safe_dump(diz, f)
-
 ###############################################################################################################################
 
 def add_to_file_yml(path, filename, key, value):
@@ -1102,184 +1075,6 @@ def edit_surplus_repartition_scheme(value):
     wb.close()
     app.quit()
 
-# UNNEEDED
-# def duplicate_and_rename_folder(source_folder_path, new_folder_path):
-#     # Get parent and child directories
-#     parent_dir = os.path.dirname(source_folder_path)
-
-#     # Create the new directory
-#     # new_folder_path = os.path.join(parent_dir, child_dir)
-#     os.makedirs(new_folder_path, exist_ok=True)
-
-#     # Copy all the files and directories from the old folder to the new one
-#     for root, dirs, files in os.walk(source_folder_path):
-#         for file in files:
-#             src_file_path = os.path.join(root, file)
-#             dst_file_path = os.path.join(new_folder_path, file)
-#             shutil.copy2(src_file_path, dst_file_path)
-#     print(source_folder_path + " folder successfully duplicated as " + new_folder_path)
-
-
-
-################################################################################################################################
-
-# DA SISTEMARE!!!
-# # UNNEEDED
-# def aggiungi_nuovi_utenti_yml(base=36):
-#     """from the excel file, generates the yml as dictionary, without nesting.
-#     We create at the same time registry_user_types.yml and registry_user.yml.
-#     """
-
-#     config = yaml.safe_load(open("config.yml", 'r'))
-#     filename_users_CACER_xls = config['filename_users_CACER_xls'] # si importa il nome del file .xls contenente gli utenti da simulare (tutte le tipologie di utenza!)
-#     filename_registry_user_types_yml = config['filename_registry_user_types_yml'] # si importa il file yaml in cui si salveranno le caratteristiche delle varie tipologie di utenza
-#     filename_recap = config['filename_recap'] # si importa il file recap
-
-#     #########################################################################
-
-#     # si apre il file excel e si importa il foglio "utenti" in un df
-#     # app = xw.App(visible = False)
-#     wb = xw.Book(filename_users_CACER_xls)
-#     df = wb.sheets["Utenti"].range('A1').options(pd.DataFrame, 
-#                                                 header=1,
-#                                                 index=False, 
-#                                                 expand='table').value
-    
-#     wb.close() # si chiude il file excel
-#     # app.quit()
-
-#     #########################################################################
-
-#     assert len(df.user_type.unique()) == len(df.user_type), "some user_type share the same ID!" # si verifica che lo user ID sia unico per ogni utente
-    
-#     #########################################################################
-
-#     df.set_index("user_type", inplace=True) # si setta lo user ID come index
-#     df.drop(columns=["number_type_id"],inplace=True) # si elimina la prima colonna
-#     df.num = df.num.fillna(0).astype(int) # si annulla la numerosità di tutti gli utenti
-
-#     #########################################################################
-    
-#     # creiamo la lista di utenti della configurazione in esame che useremo per creare il file registry_user_yml
-#     users_count = 0 # salviamo il numero di utenti
-#     all_users_list = {} # creiamo la lista di utenti per nome che servirà per creare il file refistry_user.yml
-    
-#     for user_type in df.index: # loop on the user type (ID)
-#         for number_of_user in range(int(df.num[user_type])): # loop on the number of user for the selected type
-#             user_count_base36 = np.base_repr(users_count, base=base, padding=3)[-3:] # assuming to have max (36)^3 =  users
-#             user_category_id = config["category_id"][df.loc[user_type, "category"]] # estracting the category_id from the list (Uppercase), to identify easily the type of connection (industriale, domestico, comune, etc.)
-            
-#             # if consumer
-#             if df.loc[user_type, "type"] == "consumer": 
-#                 user_category_id = user_category_id.lower() # by convention, we indicate the category_id with lower case in case the user is a consumer
-            
-#             # if prosumer
-#             if df.loc[user_type,"type"] == "producer": 
-#                 user_category_id == "X" # by convention, we indicate a producer (only grid-connected generator, no load present) with capital "X"
-            
-#             user_id = "u_" + user_category_id + user_count_base36 # we generate the user id for the selected user
-            
-#             all_users_list[user_id] = {} # we create an empty dictionary of the new user id
-#             all_users_list[user_id] = df.loc[user_type, :].to_dict() # we copy into the dictionary the same parameters that we find in the file user CACER.xls
-#             all_users_list[user_id]["user_type"] = user_type # we add also the user type id in the parameters of the users
-            
-#             users_count += 1 # we count the number of users generated in way to check if this exceed the maximum number of users that can be generated in base 36
-    
-#     assert users_count < base**3, "WARNING: the number of users exceeds the maximum achievable with 3 digits. Please increase the base representation" 
-#     print("Total users: ", users_count)
-
-#     #########################################################################
-
-#     # creiamo la lista di user_types_list per tipologia che useremo per creare il file registry_user_types.yml
-#     user_types_list = {}
-#     for user_type in df.index: # loop on the user type
-#         if not df.flag[user_type]: continue #se non è selezionato, lo saltiamo
-#         user_types_list[user_type] = {}
-#         user_types_list[user_type] = df.loc[user_type,:].to_dict()
-
-#     #########################################################################
-
-#     # saving yml with data of user types
-#     with open(filename_registry_user_types_yml, "w") as f:
-#         yaml.safe_dump(user_types_list, f)
-
-#     #saving yml with data of configuration users
-#     with open(config["filename_utenze_users_yml"], "w") as f:
-#         yaml.safe_dump(all_users_list, f)
-
-#     #########################################################################
-
-#     # si popola il file recap con varie statistiche
-
-#     recap = {} # inizializziamo il file recap.yml, cancellando i dati delle passate simulazioni
-
-#     # ripuliamo il file recap al fine di ripopolarlo nuovamente
-#     with open(filename_recap, 'w') as f:
-#         yaml.safe_dump(recap, f)
-
-#     print(len(user_types_list.keys()), " CER members types created")
-
-#     print("List of users in active configuration:")
-#     prosumers = sum([user_types_list[user]["num"] for user in user_types_list.keys() if user_types_list[user]["type"] == "prosumer"])
-#     add_to_recap_yml("numero_prosumers",prosumers)
-#     print(prosumers, " prosumers")
-
-#     producers = sum([user_types_list[user]["num"] for user in user_types_list.keys() if user_types_list[user]["type"] == "producer"])
-#     print(producers, " producers")
-#     add_to_recap_yml("numero_producers",producers)
-
-#     consumers = sum([user_types_list[user]["num"] for user in user_types_list.keys() if user_types_list[user]["type"] == "consumer"])
-#     print(consumers, " consumers")
-#     add_to_recap_yml("numero_consumers",consumers)
-
-#     #########################################################################
-
-#     capacity_PV_list = []
-#     capacity_batt_list = []
-#     for user in user_types_list.keys():
-#         if user_types_list[user]["type"] == "consumer": continue
-#         for i in range(user_types_list[user]["num"]):
-#             if not pd.isna(user_types_list[user]["pv"]): capacity_PV_list.append(int(user_types_list[user]["pv"]))
-#             if not pd.isna(user_types_list[user]["battery"]): capacity_batt_list.append(int(user_types_list[user]["battery"]))
-
-#     print("PV capacity installed [kW]: ", capacity_PV_list)
-#     add_to_recap_yml("all_PV", capacity_PV_list)
-
-#     print("Battery capacity installed [kWh]: ", capacity_batt_list)
-#     add_to_recap_yml("all_storage", capacity_batt_list)
-
-#     #########################################################################
-
-#     add_to_recap_yml("list_prosumers",[user for user in all_users_list.keys() if all_users_list[user]["type"] == "prosumer"])
-#     add_to_recap_yml("list_producers",[user for user in all_users_list.keys() if all_users_list[user]["type"] == "producer"])
-#     add_to_recap_yml("list_consumers",[user for user in all_users_list.keys() if all_users_list[user]["type"] == "consumer"])
-
-#     #########################################################################
-    
-#     # list(set( )) serve per rimuovere i doppioni dalla lista
-#     add_to_recap_yml("list_types_prosumers",list(set([all_users_list[user]["user_type"] for user in all_users_list.keys() if all_users_list[user]["type"] == "prosumer"])))
-#     add_to_recap_yml("list_types_producers",list(set([all_users_list[user]["user_type"] for user in all_users_list.keys() if all_users_list[user]["type"] == "producer"])))
-#     add_to_recap_yml("list_types_consumers",list(set([all_users_list[user]["user_type"] for user in all_users_list.keys() if all_users_list[user]["type"] == "consumer"])))
-
-#     add_to_recap_yml("list_user_types", list(set([all_users_list[user]["user_type"] for user in all_users_list.keys()])))
-#     add_to_recap_yml("all_users", list(all_users_list.keys()))
-
-#     add_to_recap_yml("PV_tot", sum(capacity_PV_list))
-#     add_to_recap_yml("batt_tot", sum(capacity_batt_list))
-#     add_to_recap_yml("PV_max", max(capacity_PV_list))
-#     add_to_recap_yml("PV_min", min(capacity_PV_list))
-
-#     if capacity_batt_list != []:
-#         add_to_recap_yml("batt_max", max(capacity_batt_list))
-#         add_to_recap_yml("batt_min", min(capacity_batt_list))
-#     else: 
-#         add_to_recap_yml("batt_max", 0)
-#         add_to_recap_yml("batt_min", 0)
-        
-#     add_to_recap_yml("total_CACER_members", len(all_users_list.keys()))
-
-#     print("Export complete")
-
 ################################################################################################################################
 
 def plant_operation_matrix():
@@ -1369,81 +1164,6 @@ def membership_matrix():
     add_to_recap_yml("users_present_month_1", users_present_month_1)
 
     print("\n **** Membership Matrix created! ****")
-
-################################################################################################################################
-
-#
-
-# we add to "user CACER.xlsx" file all parameter for CER and noCER users that are listed in config["filename_data"] file
-# def modify_user_CACER_xlsx():
-
-#     global num_rows_cacer_file_bkp # we save this parameter in way to restore the "user CACER.xlsx" file after the creation of all yaml files
-    
-#     config = yaml.safe_load(open("config.yml", 'r'))
-#     filename_users_CACER_xls = config['filename_users_CACER_xls'] # si importa il nome del file .xls contenente gli utenti da simulare (tutte le tipologie di utenza!)
-
-#     # si apre il file excel e si importa il foglio "utenti" in un df
-#     # app = xw.App(visible = False)
-#     wb = xw.Book(filename_users_CACER_xls)
-#     user_CACER_df = wb.sheets["Utenti"].range('A1').options(pd.DataFrame, 
-#                                                 header=1,
-#                                                 index=False, 
-#                                                 expand='table').value
-
-#     num_rows_cacer_file = len(user_CACER_df.index)  
-#     num_rows_cacer_file_bkp = num_rows_cacer_file # we save this parameter in way to restore the "user CACER.xlsx" file after the creation of all yaml files
-
-#     wb.sheets["Utenti"].range("B2:B" + str(num_rows_cacer_file + 1)).clear_contents() # clearing contents for the column "flag", we considered the real number of rows
-#     wb.sheets["Utenti"].range("D2:D" + str(num_rows_cacer_file + 1)).clear_contents() # clearing contents for the column "num", we considered the real number of rows
-
-#     #######################################################################################################################################################################
-
-#     filename = config["filename_data"]
-#     load_df = pd.read_excel(filename, sheet_name="load")
-#     n = load_df.columns.get_loc('flag')
-#     load_df = load_df.iloc[:, n:]
-
-#     num_rows = len(load_df.index) # number of load to import inside the "user CACER.xlsx" file
-
-#     range = "A" + str(num_rows_cacer_file + 2) + ":A" + str(num_rows_cacer_file + 1 + num_rows) # define range for pasting formula
-#     formula = wb.sheets["Utenti"].range("A2").formula # copy formula to paste
-#     wb.sheets["Utenti"].range(range).formula = formula # paste in the first column the formula to estimate the id number of user inside "user CACER.xlsx" file
-
-#     range = "B" + str(num_rows_cacer_file + 2) # define range to paste load parameters
-#     wb.sheets["Utenti"][range].options(pd.DataFrame, header=0, index=False, expand='table').value = load_df # paste load parameters
-
-#     wb.save()
-#     wb.close()
-#     app.quit()
-
-#     print("All users added to user CACER xlsx file!")
-
-################################################################################################################################
-
-# 
-
-# def restore_user_CACER_xlsx():
-#     config = yaml.safe_load(open("config.yml", 'r'))
-#     filename_users_CACER_xls = config['filename_users_CACER_xls'] # si importa il nome del file .xls contenente gli utenti da simulare (tutte le tipologie di utenza!)
-
-#     # si apre il file excel e si importa il foglio "utenti" in un df
-#     app = xw.App(visible = False)
-#     wb = xw.Book(filename_users_CACER_xls)
-#     user_CACER_df = wb.sheets["Utenti"].range('A1').options(pd.DataFrame, 
-#                                                         header=1,
-#                                                         index=False, 
-#                                                         expand='table').value
-    
-#     num_rows = len(user_CACER_df)
-    
-#     range = str(num_rows_cacer_file_bkp + 2) + ":" + str(num_rows + 1) # define range of values to clean
-#     wb.sheets["Utenti"].range(range).api.Delete(DeleteShiftDirection.xlShiftUp) # clean values in excel file
-
-#     wb.save()
-#     wb.close()
-#     app.quit()
-
-#     print("User CACER xlsx file restored!")
 
 ################################################################################################################################
 
@@ -1546,11 +1266,74 @@ def suppress_printing(func, *args, **kwargs):
 
 ##########################################################
 
+# we add to "user CACER.xlsx" file all parameter for CER and noCER users that are listed in config["filename_data"] file
+def modify_user_CACER_xlsx():
 
+    global num_rows_cacer_file_bkp # we save this parameter in way to restore the "user CACER.xlsx" file after the creation of all yaml files
+    
+    config = yaml.safe_load(open("config.yml", 'r'))
+    filename_users_CACER_xls = config['filename_users_CACER_xls'] # si importa il nome del file .xls contenente gli utenti da simulare (tutte le tipologie di utenza!)
+
+    # si apre il file excel e si importa il foglio "utenti" in un df
+    app = xw.App(visible = False)
+    wb = xw.Book(filename_users_CACER_xls)
+    user_CACER_df = wb.sheets["Utenti"].range('A1').options(pd.DataFrame, 
+                                                header=1,
+                                                index=False, 
+                                                expand='table').value
+
+    num_rows_cacer_file = len(user_CACER_df.index)  
+    num_rows_cacer_file_bkp = num_rows_cacer_file # we save this parameter in way to restore the "user CACER.xlsx" file after the creation of all yaml files
+
+    wb.sheets["Utenti"].range("B2:B" + str(num_rows_cacer_file + 1)).clear_contents() # clearing contents for the column "flag", we considered the real number of rows
+    wb.sheets["Utenti"].range("D2:D" + str(num_rows_cacer_file + 1)).clear_contents() # clearing contents for the column "num", we considered the real number of rows
+
+    #######################################################################################################################################################################
+
+    filename = config["filename_data"]
+    load_df = pd.read_excel(filename, sheet_name="load")
+    n = load_df.columns.get_loc('flag')
+    load_df = load_df.iloc[:, n:]
+
+    num_rows = len(load_df.index) # number of load to import inside the "user CACER.xlsx" file
+
+    range = "A" + str(num_rows_cacer_file + 2) + ":A" + str(num_rows_cacer_file + 1 + num_rows) # define range for pasting formula
+    formula = wb.sheets["Utenti"].range("A2").formula # copy formula to paste
+    wb.sheets["Utenti"].range(range).formula = formula # paste in the first column the formula to estimate the id number of user inside "user CACER.xlsx" file
+
+    range = "B" + str(num_rows_cacer_file + 2) # define range to paste load parameters
+    wb.sheets["Utenti"][range].options(pd.DataFrame, header=0, index=False, expand='table').value = load_df # paste load parameters
+
+    wb.save()
+    wb.close()
+    app.quit()
+
+    print("All users added to user CACER xlsx file!")
 
 ##########################################################
 
+def restore_user_CACER_xlsx():
+    config = yaml.safe_load(open("config.yml", 'r'))
+    filename_users_CACER_xls = config['filename_users_CACER_xls'] # si importa il nome del file .xls contenente gli utenti da simulare (tutte le tipologie di utenza!)
 
+    # si apre il file excel e si importa il foglio "utenti" in un df
+    app = xw.App(visible = False)
+    wb = xw.Book(filename_users_CACER_xls)
+    user_CACER_df = wb.sheets["Utenti"].range('A1').options(pd.DataFrame, 
+                                                        header=1,
+                                                        index=False, 
+                                                        expand='table').value
+    
+    num_rows = len(user_CACER_df)
+    
+    range = str(num_rows_cacer_file_bkp + 2) + ":" + str(num_rows + 1) # define range of values to clean
+    wb.sheets["Utenti"].range(range).api.Delete(DeleteShiftDirection.xlShiftUp) # clean values in excel file
+
+    wb.save()
+    wb.close()
+    app.quit()
+
+    print("User CACER xlsx file restored!")
 
 ##########################################################
 

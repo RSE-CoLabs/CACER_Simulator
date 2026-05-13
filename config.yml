@@ -31,7 +31,7 @@ battery_derating_factor: 0.0000635 # derating factor for energy storing capacity
 market_scenario: dossier_rivisto_2 # mettere una delle tipologie di scenario possibili, vedere file fornitori.yml (pensare se modificarne il nome)
 
 # load_emulator versione 
-load_emulator_version: version_2 # it is possible to select two different versions of the load_emulator: version_1 (simplified) and version_2 (advanced)
+load_emulator_version: version_1 # it is possible to select two different versions of the load_emulator: version_1 (simplified) and version_2 (advanced)
 
 ###########
 # filename
@@ -49,11 +49,22 @@ filename_output_xlsx_gen_pv: files\\gen_pv\\output_gen_pv.xlsx
 filename_output_csv_1kWp: files\\gen_pv\\output_1kWp.csv
 filename_output_xlsx_1kWp: files\\gen_pv\\output_1kWp.xlsx
 
+# folder grid
+# filename_data: files\\grid\\0. input_data\\data - Storo.xlsx
+filename_data: files\\grid\\0. input_data\\example_network.xlsx
+folder_network: files\\grid\\1. network\\
+foldername_all_results_PF: files\\grid\\2. results\\
+foldername_result_PF: files\\grid\\2. results\\
+foldername_report: files\\grid\\3. report\\
+foldername_template: files\\grid\\3. report\\template\\
+foldername_report_results: files\\grid\\3. report\\report_cases\\
+report_parameters_yml: files\\grid\\3. report\\report_parameters.yml
+
 # filename energy
 filename_profili_CACER_yml: files\\energy\\profili_CACER.yml #mi sa che si puo eliminare?
 filename_CACER_energy_monthly: files\\energy\\CACER_energy_monthly.xlsx
 filename_carichi: files\\energy\\carichi.csv
-filename_carichi_with_hvac: files\\energy\\carichi_with_hvac.csv
+filename_carichi_with_hvac: files\\energy\\carichi_with_hvac.csv # ????
 filename_carichi_noCER: files\\energy\\carichi_noCER.csv
 filename_CACER_energy_hourly: files\\energy\\CACER_energy_hourly.csv
 filename_valorization_shared_energy_hourly: files\\energy\\shared_energy_valorization_hourly.csv
@@ -67,14 +78,14 @@ filename_carico_input: files\\energy\\input\\curve_carico_input.xlsx # file di o
 filename_emulated_load_profile: files\\energy\\input\\emulated_load_profile.csv
 filename_DSM_emulated_load_profile: files\\energy\\input\\DSM_emulated_load_profile.csv
 
-# energy\\input\\load_emulator (versione 1.0)
+# filename energy\\input\\load_emulator (versione 1.0)
 filename_load_profiles_bau: files\\energy\\input\\load_emulator\\profiles_bau.csv
 filename_load_profiles_ls: files\\energy\\input\\load_emulator\\profiles_ls.csv
 filename_usage_probability: files\\energy\\input\\load_emulator\\input_emulator_v1\\appliance_usage_probability_v1.xlsx
 filename_appliance: files\\energy\\input\\load_emulator\\appliances\\washing machine.csv
 filename_appliances_load: files\\energy\\input\\load_emulator\\input_emulator_v1\\appliance_load_profile_v1.xlsx
 
-# energy\\input\\load_emulator (versione 2.0)
+# filename energy\\input\\load_emulator (versione 2.0)
 filename_metadata_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\0. metadata_load_emulator_v2.xlsx
 filename_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\1. usage_probability_v2.xlsx
 filename_multi_usage_probability_v2: files\\energy\\input\\load_emulator\\input_emulator_v2\\2. multi_usage_probability_v2.xlsx
@@ -114,7 +125,7 @@ filename_FM_yearly_results_last_simulation: files\\results_finance\\yearly_resul
 filename_FM_test: files\\results_finance\\test.csv
 filename_report: files\\report.yml
 
-# filnename and folder hvac
+# filename and folder hvac
 folder_weather_data: files\\HVAC\\weather_data\\ # Directory weather data files
 filename_weather_data: files\\HVAC\\weather_data\\weather_data.csv # Filename weather data files
 filename_future_weather_data: files\HVAC\weather_data\weather_data_future_2020_2060.csv
@@ -173,6 +184,7 @@ foldername_graphs_generali: assets\\general\\
 foldername_graphs_bills: assets\\bills\\
 foldername_graphs_all_results: assets\\all_results\\
 forlername_graphs_load_profile_emulator: assets\\load_profile_emulator\\
+forldername_graphs_PF_analysis: assets\\grid\\
 folder_images: assets\\results\\
 
 # standard day for charts
