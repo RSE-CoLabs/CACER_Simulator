@@ -11,7 +11,7 @@ import yaml
 import plotly.express as px
 import plotly.graph_objects as go
 
-from src.Functions_General import generate_calendar_modified, suppress_printing, suppress_printing_keep_tqdm
+from src.Functions_General import generate_calendar_modified, suppress_printing
 
 ##########################################################################
 
@@ -44,7 +44,7 @@ def create_dict_appliances_load_info(list_unique_load_profile, dict_appliances_l
 
     #------------------------------------------------------------------
 
-    list_appliances_no_pattern = ['dehumidifier', 'fan', 'internet_router', 'radiator', 'screen', 'sound_system',]
+    list_appliances_no_pattern = ['dehumidifier', 'fan', 'internet_router', 'radiator', 'screen', 'sound_system', 'lamp']
     list_appliances_pattern = ['freezer', 'fridge']
 
     dict_appliances_load_info = {}
@@ -59,11 +59,11 @@ def create_dict_appliances_load_info(list_unique_load_profile, dict_appliances_l
 
                 #------------------------------------------------------------------
 
+                # if it has 96 rows, it means that it is a base load profile with pattern (blp_profile) or a duty cycle profile (dc_profile), otherwise it is a base load profile without pattern (blnp_profile) or a spike profile (s_profile)
                 if dict_appliances_load[b].shape[0] == 96:
                     
                     df = dict_appliances_load[b]
-
-                    num_profiles = int(df.shape[1])
+                    num_profiles = int(df.shape[1]) # number of load profiles for the specific appliance (e.g., washing machine has 4 load profiles: washing_machine_1, washing_machine_2, washing_machine_3, washing_machine_4)
 
                     if a in list_appliances_pattern:
                         profile_type = 'blp_profile' # base load profile with pattern
@@ -1925,7 +1925,8 @@ def import_data_load_emulator_v2():
 
     dict_appliances_load = pd.read_excel(path_appliances_load_profiles, sheet_name = None, index_col = 0)
 
-    list_unique_load_profile = create_list_unique_load_profiles(dict_appliances_load)
+    list_unique_load_profile = list(pd.read_excel(path_metadata, sheet_name = 'clusters_equipment', index_col = 0).columns)
+    # list_unique_load_profile = create_list_unique_load_profiles(dict_appliances_load)
 
     dict_appliances_load_info = create_dict_appliances_load_info(list_unique_load_profile, dict_appliances_load)
 
@@ -2009,7 +2010,7 @@ def import_data_load_emulator_v2():
 
 ##########################################################################
 
-def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate_boiler = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
+def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate_boiler = True, all_boiler_profiles = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
 
     n_iterations = 12
 
@@ -2084,7 +2085,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
             # Modifica PAOLO 07/05:
             # parallelizzazione della creazione dei profili duty cycle,
             # parte più time-consuming del processo di emulazione.
-            dict_users = suppress_printing_keep_tqdm(
+            dict_users = suppress_printing(
                 create_dc_profiles_parallel,
                 *dc_args,
                 max_workers
@@ -2138,7 +2139,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
         if specific_appliance is None:
 
             if parallelize:
-                dict_users = suppress_printing_keep_tqdm(
+                dict_users = suppress_printing(
                     create_base_load_with_pattern_profiles_parallel,
                     dict_users,
                     data_input['list_appliances_blp'],
@@ -2168,7 +2169,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
         if specific_appliance is None:
 
             if parallelize:
-                dict_users = suppress_printing_keep_tqdm(
+                dict_users = suppress_printing(
                     create_base_load_without_pattern_profiles_parallel,
                     dict_users,
                     data_input['dict_appliances_load'],
@@ -2217,7 +2218,8 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
                                         dict_users, 
                                         calendar_df, 
                                         calendar_daily, 
-                                        data_input['dict_boiler_profiles'])
+                                        data_input['dict_boiler_profiles'], 
+                                        all_boiler_profiles)
 
         pbar.update(1)
 
@@ -2306,7 +2308,7 @@ def export_emulated_load_profile_v2(dict_users, specific_appliance):
 
 ##########################################################################
 
-def run_load_emulator_v2(show_results, save_all_results, specific_appliance = None):
+def run_load_emulator_v2(simulate_boiler = True, all_boiler_profiles = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
 
     print(blue("\nCreate load profile for emulated users:", ['bold', 'underlined']), '\n')
 
@@ -2364,10 +2366,18 @@ def run_load_emulator_v2(show_results, save_all_results, specific_appliance = No
         dict_users, stacked_df = load_emulator_v2(num_users, 
                                 data_input, 
                                 calendar_df, 
-                                calendar_daily, 
+                                calendar_daily,
+                                
+                                simulate_boiler,
+                                all_boiler_profiles, 
+                                
                                 show_results, # a progress bar and some plots with results will be shown
                                 save_all_results, # save the results in a pickle file, disactivate if there are too many users!!
-                                specific_appliance
+                                
+                                specific_appliance,
+                                
+                                parallelize, # parallelize the creation of duty cycle profiles, time-consuming part of the process
+                                max_workers, # number of workers to use for parallelization
                                 )
         
         print("     **** Users emulated! *****")
@@ -2479,7 +2489,7 @@ def scheduling_boiler(user_id, dict_users, calendar_df, calendar_daily, dict_boi
 
 ##########################################################################
 
-def create_boiler_profiles(dict_users, calendar_df, calendar_daily, dict_boiler_profiles):
+def create_boiler_profiles(dict_users, calendar_df, calendar_daily, dict_boiler_profiles, all_boiler_profiles = True):
     
     i = 0
 
@@ -2505,7 +2515,13 @@ def create_boiler_profiles(dict_users, calendar_df, calendar_daily, dict_boiler_
 
                 dict_users[user_id]['appliances']['boiler']['efficiency'] = eta
 
-                dict_users = suppress_printing(scheduling_boiler, user_id, dict_users, calendar_df, calendar_daily, dict_boiler_profiles)
+                # modified dict_boiler_profiles: if all_boiler_profiles is True, we use all the boiler profiles, otherwise we use only boiler_1 and boiler_4 profiles (the ones with lowest mean consumption)
+                if all_boiler_profiles == True:
+                    dict_boiler_profiles_mod = dict_boiler_profiles
+                else:
+                    dict_boiler_profiles_mod = {k: v for k, v in dict_boiler_profiles.items() if k[:-3] in ['boiler_1', 'boiler_4']}
+
+                dict_users = suppress_printing(scheduling_boiler, user_id, dict_users, calendar_df, calendar_daily, dict_boiler_profiles_mod)
 
                 print(f"   - Mean daily consumption: {round(dict_users[user_id]['appliances']['boiler']['consumption_dataframe']['appliance_consumption_kWh'].sum() / calendar_daily.shape[0], 2)} kWh\n")
 
