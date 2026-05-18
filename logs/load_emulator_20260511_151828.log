@@ -1,0 +1,83 @@
+Log avviato: logs\load_emulator_20260511_151828.log
+--------------------------------------------------
+Creo calendario...
+Importo dati input...
+Specific appliance to emulate...
+Avvio load emulator...
+  0%|                                                                                                                                                                                                                                                                                                                                                                      | 0/10 [00:00<?, ?it/s]Assign clusters to users:   0%|                                                                                                                                                                                                                                                                                                                                            | 0/10 [00:00<?, ?it/s]Assign appliances to users:  10%|################################                                                                                                                                                                                                                                                                                                | 1/10 [00:00<00:00, 1000.31it/s]Create daily activation matrix:  20%|###############################################################2                                                                                                                                                                                                                                                            | 2/10 [00:00<00:00, 2000.62it/s]Create daily activation matrix:  30%|###############################################################################################3                                                                                                                                                                                                                              | 3/10 [00:10<00:23,  3.36s/it]Create consumption for appliances with duty cycle profiles:  30%|#######################################################################################                                                                                                                                                                                                           | 3/10 [00:10<00:23,  3.36s/it]Create consumption for appliances with duty cycle profiles:  30%|#######################################################################################                                                                                                                                                                                                           | 3/10 [00:10<00:23,  3.36s/it]
+--------------------------------------------------
+ERRORE DURANTE LA SIMULAZIONE
+
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+        To fix this issue, refer to the "Safe importing of main module"
+        section in https://docs.python.org/3/library/multiprocessing.html
+        
+--------------------------------------------------
+Traceback (most recent call last):
+  File "c:\Repos\CACER_Simulator\main_load_emulator_A2A.py", line 67, in <module>
+    dict_users, stacked_df = load_emulator_v2(
+                             ^^^^^^^^^^^^^^^^^
+  File "c:\Repos\CACER_Simulator\src\Functions_Load_Emulator_v2.py", line 2040, in load_emulator_v2
+    dict_users = suppress_printing_keep_tqdm(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Repos\CACER_Simulator\src\Functions_General.py", line 1555, in suppress_printing_keep_tqdm
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Repos\CACER_Simulator\src\Functions_Load_Emulator_v2.py", line 987, in create_dc_profiles_parallel
+    futures = [executor.submit(_create_dc_profiles_single_user, task) for task in tasks]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Repos\CACER_Simulator\src\Functions_Load_Emulator_v2.py", line 987, in <listcomp>
+    futures = [executor.submit(_create_dc_profiles_single_user, task) for task in tasks]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\process.py", line 808, in submit
+    self._adjust_process_count()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\process.py", line 767, in _adjust_process_count
+    self._spawn_process()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\process.py", line 785, in _spawn_process
+    p.start()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\process.py", line 121, in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\context.py", line 336, in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\popen_spawn_win32.py", line 46, in __init__
+    prep_data = spawn.get_preparation_data(process_obj._name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\spawn.py", line 164, in get_preparation_data
+    _check_not_importing_main()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\spawn.py", line 140, in _check_not_importing_main
+    raise RuntimeError('''
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+
+        To fix this issue, refer to the "Safe importing of main module"
+        section in https://docs.python.org/3/library/multiprocessing.html
+        
+--------------------------------------------------
+Log salvato in: logs\load_emulator_20260511_151828.log

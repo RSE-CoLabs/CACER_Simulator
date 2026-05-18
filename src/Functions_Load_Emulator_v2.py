@@ -368,6 +368,21 @@ def smooth_bias(p, strength=2):
 
 ##########################################################################
 
+def remove_scheduled_probability(df_usage_appliance, timestep_extracted, num_timesteps):
+    updated_usage = df_usage_appliance.copy()
+
+    try:
+        start_idx = updated_usage.index.get_loc(timestep_extracted.time())
+    except KeyError:
+        return updated_usage
+
+    end_idx = min(start_idx + max(num_timesteps, 1), len(updated_usage))
+    updated_usage.iloc[start_idx:end_idx] = 0
+
+    return updated_usage
+
+##########################################################################
+
 def extract_load_profile(a, appliance_extracted, num_activation, dict_appliances_load_info, strength = 2, ):
 
     # extract load profile
@@ -416,15 +431,10 @@ def extract_df_usage_probability(day_type, df_usage_probability_wd, df_usage_pro
 
 def create_scheduling(appliance_extracted, 
                       day_date, 
-                      num_timesteps, 
-                      df_usage_appliance, 
+                      timestep_extracted,
                       df_scheduling, 
                       load_profile_extracted, 
                       dict_appliances_load):
-
-    #---------------------------------------------------------------------------------------------
-
-    timestep_extracted = extract_next_activation_time(df_usage_appliance, day_date)
 
     #---------------------------------------------------------------------------------------------
 
@@ -437,19 +447,25 @@ def create_scheduling(appliance_extracted,
     profile_arr = profile_arr[profile_arr != 0]
 
     start_idx = df_scheduling.index.get_loc(timestep_extracted) # posizione di start
+    day_mask = df_scheduling.index.date == day_date
+    day_positions = np.flatnonzero(day_mask)
+    day_end_idx = int(day_positions[-1])
+    end_idx = min(start_idx + len(profile_arr), day_end_idx + 1)
+    profile_arr = profile_arr[: max(end_idx - start_idx, 0)]
 
-    df_scheduling.iloc[start_idx : start_idx + len(profile_arr), df_scheduling.columns.get_loc('appliance_consumption_kWh')] += profile_arr # inserimento nel dataframe
+    if len(profile_arr) > 0:
+        df_scheduling.iloc[start_idx:end_idx, df_scheduling.columns.get_loc('appliance_consumption_kWh')] += profile_arr # inserimento nel dataframe
 
     #---------------------------------------------------------------------------------------------
 
     last_scheduling = timestep_extracted
 
-    last_activation = last_scheduling + timedelta(minutes = (num_timesteps - 1) * 15)
+    last_activation = df_scheduling.index[end_idx - 1] if end_idx > start_idx else last_scheduling
     last_date_new = last_activation.date()
     last_time_new = last_activation.time()
 
     print("         - Last activation time:", str(last_activation))
-    print("         - Load cycle duration:", str(num_timesteps * 15), "minutes")
+    print("         - Load cycle duration:", str(len(profile_arr) * 15), "minutes")
 
     #---------------------------------------------------------------------------------------------
 
@@ -484,8 +500,6 @@ def scheduling_duty_cycle_appliances(
     #---------------------------------------------------------------------------------------------
 
     df_scheduling = pd.DataFrame(0, index = calendar_df.index, columns = ['scheduled_activation', 'load_profile_extracted', 'appliance_consumption_kWh']) # create an empty scheduling matrix for the specific user and appliance, with the same index as calendar_df and columns: scheduled_activation, load_profile_extracted, appliance_consumption_kWh
-    last_date = calendar_df.index[0].date() # initial last date is the first date of the calendar
-    last_time = calendar_df.index[0].time() # initial last time is the first time of the calendar
 
     #---------------------------------------------------------------------------------------------
 
@@ -498,11 +512,8 @@ def scheduling_duty_cycle_appliances(
         if max_seconds is not None and start_time is not None:
             if time.monotonic() - start_time > max_seconds:
                 raise TimeoutError(f"Timeout su {user_id} - {appliance}")
-        # if the activation flag is false, we set the last time to 00:00:00, otherwise we extract the load profile and the activation time for the specific day 
-        # (because there aren't activations for the current day, so we can reset the last time to 00:00:00, otherwise we need to keep track of the last time of activation to avoid extracting a timestep for activation that is before the last activation time)
         if df.iloc[day]['activation_flag'] == False:
-
-            last_time = datetime.strptime('00:00:00', '%H:%M:%S').time()
+            continue
 
         else:
 
@@ -519,12 +530,8 @@ def scheduling_duty_cycle_appliances(
 
             #---------------------------------------------------------------------------------------------
 
-            # if the current day is different from the last day, we reset the last time to 00:00:00
-            if last_date != day_date:
-
-                last_time = datetime.strptime('00:00:00', '%H:%M:%S').time()
-
-            #---------------------------------------------------------------------------------------------
+            df_usage_appliance = df_usage_probability[appliance].copy() # usage probability for the specific appliance (e.g., washing_machine)
+            df_usage_appliance.index = pd.to_datetime(df_usage_appliance.index, format='%H:%M:%S').time # convert index to time format
 
             # iterate over the number of activations for the current day
             for n in range(num_activation):
@@ -537,62 +544,24 @@ def scheduling_duty_cycle_appliances(
 
                 #---------------------------------------------------------------------------------------------
 
-                # if in some of the previous iterations the last date is different from the current day date, we raise an error 
-                # because it means that we extracted a timestep for activation that is before the last activation time, which is not possible
-                if n > 0:
-                    
-                    try:
-                        assert last_date == day_date, f"Error, last date {last_date} is not equal to day date {day_date}!"
-                    
-                    except:
-                        print(red(f"        Error, last date {last_date} is not equal to day date {day_date}!"))
-                        count_error+=1
-                        continue
-                
-                #---------------------------------------------------------------------------------------------
-                #---------------------------------------------------------------------------------------------
-
                 # extract load profile for the specific appliance and the specific activation (e.g., washing_machine_1, activation 1)
                 load_profile_extracted, num_timesteps = extract_load_profile(appliance, appliance_extracted, num_activation, dict_appliances_load_info, strength = 2)
 
                 #---------------------------------------------------------------------------------------------
-                #---------------------------------------------------------------------------------------------
+                if df_usage_appliance.sum() <= 0:
+                    print(red("        No available timesteps for activation, skipping the remaining activations of the day."))
+                    break
 
-                df_usage_appliance = df_usage_probability[appliance].copy() # usage probability for the specific appliance (e.g., washing_machine)
-                df_usage_appliance.index = pd.to_datetime(df_usage_appliance.index, format='%H:%M:%S').time # convert index to time format
-                
-                # set to zero the probabilities of the timesteps that are before the last activation time
-                # because we cannot extract a timestep for activation that is before the last activation time
-                df_usage_appliance.loc[df_usage_appliance.index <= last_time] = 0 
-                
-                #---------------------------------------------------------------------------------------------
+                timestep_extracted = extract_next_activation_time(df_usage_appliance, day_date)
 
-                # if the number of activations is greater than 1, we smooth the usage probability 
-                # to give more importance to the timesteps that are farther from the last activation time, to avoid extracting timesteps for activation that are too close to each other (e.g., if we have 3 activations for the current day, we want to give more importance to the timesteps that are farther from the last activation time, to avoid extracting 3 timesteps for activation that are too close to each other)
-                if num_activation > 1: df_usage_appliance = smooth_bias(df_usage_appliance, num_activation * strength)
+                df_scheduling, _, _, _ = create_scheduling(appliance_extracted, 
+                                                           day_date, 
+                                                           timestep_extracted,
+                                                           df_scheduling, 
+                                                           load_profile_extracted, 
+                                                           dict_appliances_load)
 
-                #---------------------------------------------------------------------------------------------
-                #---------------------------------------------------------------------------------------------
-                
-                # extract activation time for the specific appliance, load profile and activation number (e.g., washing_machine_1, load profile 1, activation 1)
-                # if some error occurs during the extraction of the activation time (e.g., no available timesteps for activation, timestep not extracted, etc.), we catch the error and continue with the next iteration, without stopping the whole process
-                try:
-
-                    assert df_usage_appliance.sum() > 0, "Error, no available timesteps for activation!" # if all the probabilities are zero, we cannot extract a timestep for activation
-                    
-                    df_scheduling, last_scheduling_new, last_date, last_time = create_scheduling(appliance_extracted, 
-                                                                                                 day_date, 
-                                                                                                 num_timesteps, 
-                                                                                                 df_usage_appliance, 
-                                                                                                 df_scheduling, 
-                                                                                                 load_profile_extracted, 
-                                                                                                 dict_appliances_load) 
-
-                except:
-
-                    print(red(f"        Error, timestep not extracted!"))
-                    count_error+=1
-                    continue
+                df_usage_appliance = remove_scheduled_probability(df_usage_appliance, timestep_extracted, num_timesteps)
 
                 #---------------------------------------------------------------------------------------------
 
@@ -1337,7 +1306,7 @@ def create_base_load_with_pattern_profiles_parallel(
 
 ##########################################################################
 
-def create_base_load_without_pattern_profiles(dict_users, dict_appliances_load, dict_appliances_load_info, calendar_df, show_progress = False):
+def create_base_load_without_pattern_profiles(dict_users, list_appliances_blnp, dict_appliances_load, dict_appliances_load_info, calendar_df, show_progress = False):
 
     for u, user_id in enumerate(dict_users.keys()):
 
@@ -1347,7 +1316,7 @@ def create_base_load_without_pattern_profiles(dict_users, dict_appliances_load, 
 
         for appliance in dict_users[user_id]['appliances'].keys():
 
-            if appliance not in ['internet_router']:
+            if appliance not in list_appliances_blnp:
             
                 continue
             
@@ -1382,6 +1351,7 @@ def _create_base_load_without_pattern_single_user(args):
     (
         user_id,
         user_data,
+        list_appliances_blnp,
         dict_appliances_load,
         dict_appliances_load_info,
         calendar_df
@@ -1396,7 +1366,7 @@ def _create_base_load_without_pattern_single_user(args):
 
     for appliance in user_data["appliances"].keys():
 
-        if appliance not in ["internet_router"]:
+        if appliance not in list_appliances_blnp:
             continue
 
         i_appliance += 1
@@ -1439,6 +1409,7 @@ def _create_base_load_without_pattern_single_user(args):
 
 def create_base_load_without_pattern_profiles_parallel(
     dict_users,
+    list_appliances_blnp,
     dict_appliances_load,
     dict_appliances_load_info,
     calendar_df,
@@ -1457,6 +1428,7 @@ def create_base_load_without_pattern_profiles_parallel(
         tasks.append((
             user_id,
             user_data,
+            list_appliances_blnp,
             dict_appliances_load,
             dict_appliances_load_info,
             calendar_df
@@ -2013,6 +1985,10 @@ def import_data_load_emulator_v2():
 def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate_boiler = True, all_boiler_profiles = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
 
     n_iterations = 12
+    run_base_load = specific_appliance is None
+    run_blp_profiles = specific_appliance is None or specific_appliance in data_input['list_appliances_blp']
+    run_blnp_profiles = specific_appliance is None or specific_appliance in data_input['list_appliances_blnp']
+    use_parallel = parallelize and (max_workers is None or max_workers > 1)
 
     with tqdm(total=n_iterations) as pbar:
 
@@ -2032,7 +2008,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         pbar.set_description("Assign appliances to users")
 
-        if specific_appliance is None:
+        if run_base_load:
 
             dict_users = assign_equipment_to_users(num_user, dict_users, data_input['df_clusters_equipment'], data_input['df_clusters_equipment_multi'])
 
@@ -2081,7 +2057,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
             pbar
         )
 
-        if parallelize:
+        if use_parallel:
             # Modifica PAOLO 07/05:
             # parallelizzazione della creazione dei profili duty cycle,
             # parte più time-consuming del processo di emulazione.
@@ -2095,6 +2071,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
                 create_dc_profiles,
                 *dc_args
             )
+            pbar.update(1)
 
         #---------------------------------------------------------------------------------------------
         # 4. Calculate scheduled consumption for appliance with "spike profiles"
@@ -2120,7 +2097,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         pbar.set_description("Create base load")
 
-        if specific_appliance is None:
+        if run_base_load:
 
             dict_users = suppress_printing(create_base_load_profiles, 
                                            dict_users, 
@@ -2136,10 +2113,10 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         pbar.set_description("Create consumption for appliances with continuous pattern profiles")
 
-        if specific_appliance is None:
+        if run_blp_profiles:
 
             if parallelize:
-                dict_users = suppress_printing(
+                dict_users = suppress_printing_keep_tqdm(
                     create_base_load_with_pattern_profiles_parallel,
                     dict_users,
                     data_input['list_appliances_blp'],
@@ -2166,12 +2143,13 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         pbar.set_description("Create consumption for appliances with continuous no pattern profiles")
 
-        if specific_appliance is None:
+        if run_blnp_profiles:
 
             if parallelize:
-                dict_users = suppress_printing(
+                dict_users = suppress_printing_keep_tqdm(
                     create_base_load_without_pattern_profiles_parallel,
                     dict_users,
+                    data_input['list_appliances_blnp'],
                     data_input['dict_appliances_load'],
                     data_input['dict_appliances_load_info'],
                     calendar_df,
@@ -2182,6 +2160,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
                 dict_users = suppress_printing(
                     create_base_load_without_pattern_profiles,
                     dict_users,
+                    data_input['list_appliances_blnp'],
                     data_input['dict_appliances_load'],
                     data_input['dict_appliances_load_info'],
                     calendar_df
@@ -2366,18 +2345,10 @@ def run_load_emulator_v2(simulate_boiler = True, all_boiler_profiles = True, sho
         dict_users, stacked_df = load_emulator_v2(num_users, 
                                 data_input, 
                                 calendar_df, 
-                                calendar_daily,
-                                
-                                simulate_boiler,
-                                all_boiler_profiles, 
-                                
+                                calendar_daily, 
                                 show_results, # a progress bar and some plots with results will be shown
                                 save_all_results, # save the results in a pickle file, disactivate if there are too many users!!
-                                
-                                specific_appliance,
-                                
-                                parallelize, # parallelize the creation of duty cycle profiles, time-consuming part of the process
-                                max_workers, # number of workers to use for parallelization
+                                specific_appliance
                                 )
         
         print("     **** Users emulated! *****")
