@@ -1,0 +1,3 @@
+# GridSimulator
+
+Simulazione rete elettrica.

@@ -1,0 +1,115 @@
+site_name: RSE CoLabs - CACER Simulator
+site_description: Energy Community Simulation Framework
+site_author: RSE CoLabs
+repo_url: https://github.com/RSE-CoLabs/CACER_Simulator
+repo_name: CACER_Simulator
+docs_dir: docs
+site_dir: site
+
+theme:
+  
+  name: material
+
+  icon:
+      repo: fontawesome/brands/github
+
+  logo: assets/logos/favicon.png
+  favicon: assets/logos/favicon.png
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  palette:
+
+    # LIGHT MODE
+    - scheme: default
+      primary: teal
+      accent: green
+
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+
+    # DARK MODE
+    - scheme: slate
+      primary: teal
+      accent: green
+
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.instant
+    - navigation.top
+    - navigation.indexes
+    - toc.integrate
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.code.copy
+    - content.tabs.link
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - ..
+  - mermaid2
+  - mkdocs-jupyter
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Repository Structure: repository_structure.md
+
+  - Tutorials:
+      - CACER Tutorial: tutorials/cacer_tutorial.md
+      - PV Simulator: tutorials/pv_simulator.md
+      - Load Emulator v1: tutorials/load_emulator_v1.md
+      - Load Emulator v2: tutorials/load_emulator_v2.md
+      - Grid simulator: tutorials/grid_simulator.md
+
+  - Modules:
+      - CACER Simulator: modules/cacer_simulator.md
+      - Energy Model: modules/energy_model.md
+      - Photovoltaic Simulator: modules/pv_simulator.md
+      - BESS Simulator: modules/bess_simulator.md
+      - Load Emulator v1: modules/load_emulator_v1.md
+      - Load Emulator v2: modules/load_emulator_v2.md
+      - Demand Response: modules/dsm_simulator.md
+      - HVAC Simulator: modules/hvac_simulator.md
+      - EV Simulator: modules/ev_simulator.md
+      - Grid Impact: modules/grid_simulator.md
+      - Financial Model: modules/financial_model.md
+
+  - Source:
+      - Energy Model: src/Functions_Energy_Model.md
+      - Financial Model: src/Functions_Financial_Model.md
+
+copyright: |
+  Copyright 2026 RSE CoLabs - CACER Simulator
+
+extra:
+
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/RSE-CoLabs/CACER_Simulator
+
+    - icon: material/web
+      link: https://www.rse-web.it/
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html

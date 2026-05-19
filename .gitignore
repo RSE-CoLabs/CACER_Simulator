@@ -57,3 +57,23 @@ files/incentives/CACER_incentivi_per_configuration.csv
 files/incentives/CACER_incentivi.csv
 files/HVAC/weather_data/
 files/HVAC/results_HVAC/
+files/energy/input/load_emulator/appliances profiles/
+data_analysis_appliances_profiles.ipynb
+data_analysis_Kaggle_db.ipynb
+data_analysis_RSE_db.ipynb
+app_explore_dictionary.py
+data_analysis_zenodo_induction_hob.ipynb
+data_analysis_zenodo_light.ipynb
+metadata_zenodo_db_induction_hob.yml
+metadata_zenodo_db_light.yml
+metadati_RSE_db.yml
+files/grid/0. input_data/data - Storo.xlsx
+files/grid/1. network/example.p
+files/grid/1. network/Storo.p
+files/grid/2. results/example_case.pkl
+files/energy/user_type_energy_exchange.csv
+0. data_analysis_RSE_db.ipynb
+1. data_analysis_Kaggle_db.ipynb
+2. data_analysis_zenodo_induction_hob.ipynb
+3. data_analysis_zenodo_light.ipynb
+4. data_analysis_mendeley.ipynb
