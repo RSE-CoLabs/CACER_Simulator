@@ -11,7 +11,13 @@ import yaml
 import plotly.express as px
 import plotly.graph_objects as go
 
-from src.Functions_General import generate_calendar_modified, suppress_printing
+from src.Functions_General import generate_calendar_modified, suppress_printing, suppress_printing_keep_tqdm
+
+# Fallback difensivo: in notebook Jupyter puo' restare in memoria una versione
+# del modulo caricata prima dell'introduzione di suppress_printing_keep_tqdm.
+# In quel caso ripieghiamo sul wrapper standard invece di alzare NameError.
+if 'suppress_printing_keep_tqdm' not in globals():
+    suppress_printing_keep_tqdm = suppress_printing
 
 ##########################################################################
 
@@ -652,8 +658,8 @@ def scheduling_spike_appliances(user_id,
 
             #---------------------------------------------------------------------------------------------
 
-            mean = float(dict_appliances_load[appliance_extracted].loc['mean'][0])
-            std = float(dict_appliances_load[appliance_extracted].loc['std'][0])
+            mean = float(dict_appliances_load[appliance_extracted].loc['mean'].iloc[0])
+            std = float(dict_appliances_load[appliance_extracted].loc['std'].iloc[0])
             consumption_extracted = generate_random_value(mean, std)
 
             start_idx = df_scheduling.index.get_loc(timestep_extracted) # posizione di start
@@ -773,8 +779,8 @@ def create_on_cycle(df_consumption, last_scheduling, t, appliance_extracted, app
 
 def create_off_cycle(df_consumption, last_activation, t, appliance_extracted, dict_appliances_load, calendar_df):
 
-    mean = float(dict_appliances_load[appliance_extracted+'_oc'].loc['mean'][0]) # value in hours
-    std = float(dict_appliances_load[appliance_extracted+'_oc'].loc['std'][0]) # value in hours
+    mean = float(dict_appliances_load[appliance_extracted+'_oc'].loc['mean'].iloc[0]) # value in hours
+    std = float(dict_appliances_load[appliance_extracted+'_oc'].loc['std'].iloc[0]) # value in hours
     
     off_cycle_duration_extracted = generate_random_value(mean, std)
     off_cycle_duration_extracted = math.ceil(off_cycle_duration_extracted * 60 / 15)
@@ -822,23 +828,33 @@ def create_dc_profiles(dict_users, list_appliances_dc, dict_appliances_load, dic
                 print('\n', (f"{i}. Creating scheduling matrix for:"), blue(appliance), '\n')
 
                 count_error = 1
-                
                 iteration = 0
+                df_scheduling = pd.DataFrame(
+                    0,
+                    index=calendar_df.index,
+                    columns=['scheduled_activation', 'load_profile_extracted', 'appliance_consumption_kWh']
+                )
 
-                while count_error != 0 and iteration < 100:
+                try:
+                    while count_error != 0 and iteration < 100:
 
-                    df_scheduling, count_error = suppress_printing(scheduling_duty_cycle_appliances, 
-                                                                    user_id,
-                                                                    appliance,
-                                                                    dict_users,
-                                                                    dict_appliances_load,
-                                                                    dict_appliances_load_info,
-                                                                    calendar_df,
-                                                                    calendar_daily,
-                                                                    df_usage_probability_wd,
-                                                                    df_usage_probability_we, 
-                                                                    strength = 2)
-                    iteration += 1
+                        df_scheduling, count_error = suppress_printing(
+                            scheduling_duty_cycle_appliances,
+                            user_id,
+                            appliance,
+                            dict_users,
+                            dict_appliances_load,
+                            dict_appliances_load_info,
+                            calendar_df,
+                            calendar_daily,
+                            df_usage_probability_wd,
+                            df_usage_probability_we,
+                            strength=2
+                        )
+                        iteration += 1
+                except Exception as e:
+                    print(red(f"      **** Error while creating {appliance} for {user_id}: {e} ****", ['bold']))
+                    count_error = 1
 
                 dict_users[user_id]['appliances'][appliance]['consumption_dataframe'] = df_scheduling.copy()
 
@@ -1332,12 +1348,12 @@ def create_base_load_without_pattern_profiles(dict_users, list_appliances_blnp, 
 
                 df_consumption = pd.DataFrame(0, index = calendar_df.index, columns = ['appliance_consumption_kWh'])
 
-                for i in tqdm(df_consumption.index, desc=f"Creating {appliance} load profile for {user_id}", total=len(df_consumption.index), disable=not show_progress):
-                    mean = float(dict_appliances_load[appliance_extracted].loc['mean'][0]) # value in hours
-                    std = float(dict_appliances_load[appliance_extracted].loc['std'][0]) # value in hours
+                for timestamp in tqdm(df_consumption.index, desc=f"Creating {appliance} load profile for {user_id}", total=len(df_consumption.index), disable=not show_progress):
+                    mean = float(dict_appliances_load[appliance_extracted].loc['mean'].iloc[0]) # value in hours
+                    std = float(dict_appliances_load[appliance_extracted].loc['std'].iloc[0]) # value in hours
 
                     consumption_extracted = generate_random_value(mean, std)
-                    df_consumption.loc[i, 'appliance_consumption_kWh'] = consumption_extracted
+                    df_consumption.loc[timestamp, 'appliance_consumption_kWh'] = consumption_extracted
 
                 dict_users[user_id]['appliances'][appliance]['consumption_dataframe'] = df_consumption.copy()
         
@@ -1391,8 +1407,8 @@ def _create_base_load_without_pattern_single_user(args):
             columns=["appliance_consumption_kWh"]
         )
 
-        mean = float(dict_appliances_load[appliance_extracted].loc["mean"][0])
-        std = float(dict_appliances_load[appliance_extracted].loc["std"][0])
+        mean = float(dict_appliances_load[appliance_extracted].loc["mean"].iloc[0])
+        std = float(dict_appliances_load[appliance_extracted].loc["std"].iloc[0])
 
         for timestamp in df_consumption.index:
             consumption_extracted = generate_random_value(mean, std)
@@ -1552,8 +1568,8 @@ def scheduling_light(dict_users, user_id, calendar_df, calendar_daily, df_usage_
 
             #---------------------------------------------------------------------------------------------
 
-            mean = float(dict_appliances_load['lamp_1'].loc['mean'][0])
-            std = float(dict_appliances_load['lamp_1'].loc['std'][0])
+            mean = float(dict_appliances_load['lamp_1'].loc['mean'].iloc[0])
+            std = float(dict_appliances_load['lamp_1'].loc['std'].iloc[0])
             consumption_extracted = generate_random_value(mean, std) / 1000
 
             #---------------------------------------------------------------------------------------------
@@ -2115,7 +2131,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         if run_blp_profiles:
 
-            if parallelize:
+            if use_parallel:
                 dict_users = suppress_printing_keep_tqdm(
                     create_base_load_with_pattern_profiles_parallel,
                     dict_users,
@@ -2145,7 +2161,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
         if run_blnp_profiles:
 
-            if parallelize:
+            if use_parallel:
                 dict_users = suppress_printing_keep_tqdm(
                     create_base_load_without_pattern_profiles_parallel,
                     dict_users,
