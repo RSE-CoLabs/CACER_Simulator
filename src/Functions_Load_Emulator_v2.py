@@ -2150,7 +2150,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
         if run_blp_profiles:
 
             if parallelize:
-                dict_users = suppress_printing_keep_tqdm(
+                dict_users = suppress_printing(
                     create_base_load_with_pattern_profiles_parallel,
                     dict_users,
                     data_input['list_appliances_blp'],
@@ -2180,7 +2180,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
         if run_blnp_profiles:
 
             if parallelize:
-                dict_users = suppress_printing_keep_tqdm(
+                dict_users = suppress_printing(
                     create_base_load_without_pattern_profiles_parallel,
                     dict_users,
                     data_input['list_appliances_blnp'],
