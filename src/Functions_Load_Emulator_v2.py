@@ -294,9 +294,9 @@ def create_daily_activation_matrix(dict_users, calendar_daily, dict_multi_usage_
                     #----------------------------------------------------------------------------
 
                     # check consistency washing machine and dryer activation:
-                    if a == 'washing_machine' and 'dryer' in dict_users['user_0']['appliances'].keys():
+                    if a == 'washing_machine' and 'dryer' in dict_users[u]['appliances'].keys():
                         if dict_users[u]['appliances']['dryer']['daily_activation_matrix']['activation_flag'][day]:         
-                            num_activation_dryer = dict_users['user_0']['appliances']['dryer']['daily_activation_matrix']['number_of_activation'][day]
+                            num_activation_dryer = dict_users[u]['appliances']['dryer']['daily_activation_matrix']['number_of_activation'][day]
                             num_activation = max(num_activation, num_activation_dryer)
     
                     #----------------------------------------------------------------------------
@@ -378,6 +378,38 @@ def remove_scheduled_probability(df_usage_appliance, timestep_extracted, num_tim
 
     end_idx = min(start_idx + max(num_timesteps, 1), len(updated_usage))
     updated_usage.iloc[start_idx:end_idx] = 0
+
+    return updated_usage
+
+##########################################################################
+
+def remove_overlapping_start_probability(df_usage_appliance, df_scheduling, day_date, num_timesteps):
+    updated_usage = df_usage_appliance.copy()
+
+    day_date = pd.Timestamp(day_date).date()
+    day_mask = df_scheduling.index.date == day_date
+    day_index = df_scheduling.index[day_mask]
+
+    if len(day_index) == 0:
+        updated_usage[:] = 0
+        return updated_usage
+
+    occupied = df_scheduling.loc[day_index, 'appliance_consumption_kWh'].values > 0
+    cycle_timesteps = max(int(num_timesteps), 1)
+
+    for i, time_value in enumerate(updated_usage.index):
+        timestep = pd.Timestamp(datetime.combine(day_date, time_value))
+
+        try:
+            start_idx = day_index.get_loc(timestep)
+        except KeyError:
+            updated_usage.iloc[i] = 0
+            continue
+
+        end_idx = start_idx + cycle_timesteps
+
+        if end_idx > len(day_index) or occupied[start_idx:end_idx].any():
+            updated_usage.iloc[i] = 0
 
     return updated_usage
 
@@ -548,11 +580,13 @@ def scheduling_duty_cycle_appliances(
                 load_profile_extracted, num_timesteps = extract_load_profile(appliance, appliance_extracted, num_activation, dict_appliances_load_info, strength = 2)
 
                 #---------------------------------------------------------------------------------------------
-                if df_usage_appliance.sum() <= 0:
-                    print(red("        No available timesteps for activation, skipping the remaining activations of the day."))
+                df_usage_available = remove_overlapping_start_probability(df_usage_appliance, df_scheduling, day_date, num_timesteps)
+
+                if df_usage_available.sum() <= 0:
+                    print(red("        No non-overlapping timesteps for activation, skipping the remaining activations of the day."))
                     break
 
-                timestep_extracted = extract_next_activation_time(df_usage_appliance, day_date)
+                timestep_extracted = extract_next_activation_time(df_usage_available, day_date)
 
                 df_scheduling, _, _, _ = create_scheduling(appliance_extracted, 
                                                            day_date, 
@@ -1332,12 +1366,12 @@ def create_base_load_without_pattern_profiles(dict_users, list_appliances_blnp, 
 
                 df_consumption = pd.DataFrame(0, index = calendar_df.index, columns = ['appliance_consumption_kWh'])
 
-                for i in tqdm(df_consumption.index, desc=f"Creating {appliance} load profile for {user_id}", total=len(df_consumption.index), disable=not show_progress):
+                for timestamp in tqdm(df_consumption.index, desc=f"Creating {appliance} load profile for {user_id}", total=len(df_consumption.index), disable=not show_progress):
                     mean = float(dict_appliances_load[appliance_extracted].loc['mean'][0]) # value in hours
                     std = float(dict_appliances_load[appliance_extracted].loc['std'][0]) # value in hours
 
                     consumption_extracted = generate_random_value(mean, std)
-                    df_consumption.loc[i, 'appliance_consumption_kWh'] = consumption_extracted
+                    df_consumption.loc[timestamp, 'appliance_consumption_kWh'] = consumption_extracted
 
                 dict_users[user_id]['appliances'][appliance]['consumption_dataframe'] = df_consumption.copy()
         
