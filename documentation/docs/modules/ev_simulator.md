@@ -1,3 +1,3 @@
 # EV simulator
 
-Descrizione EV simulator.
+🛠️ Work in progress...

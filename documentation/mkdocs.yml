@@ -76,6 +76,7 @@ nav:
       - PV Simulator: tutorials/pv_simulator.md
       - Load Emulator v1: tutorials/load_emulator_v1.md
       - Load Emulator v2: tutorials/load_emulator_v2.md
+      - Load Emulator v2 Details: load_emulator_v2.md
       - Grid simulator: tutorials/grid_simulator.md
 
   - Modules:

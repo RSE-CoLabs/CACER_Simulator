@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pv-simulator" class="md-skip">
+        <a href="#photovoltaic-productivity-simulator" class="md-skip">
           Skip to content
         </a>
       
@@ -498,6 +498,8 @@
       
         
       
+        
+      
     
     
     
@@ -644,6 +646,34 @@
     
   
     Load Emulator v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../load_emulator_v2.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load Emulator v2 Details
   
 
     
@@ -1241,8 +1271,41 @@
   
 
 
-<h1 id="pv-simulator">PV simulator</h1>
-<p>Descrizione PV simulator.</p>
+<h1 id="photovoltaic-productivity-simulator">Photovoltaic Productivity Simulator</h1>
+<p>A simulator for photovoltaic productivity has been created. The <code>pvlib</code> open source library is used to simulate the productivity of a photovoltaic generator. More information about the library can be found in the <a href="https://pvlib-python.readthedocs.io/">pvlib documentation</a>.</p>
+<p>The main inputs of the simulator are:</p>
+<ul>
+<li><strong>Location</strong>.</li>
+<li><strong>Capacity of the photovoltaic generator</strong>.</li>
+<li><strong>Yearly derating factor</strong>.</li>
+</ul>
+<p>A typical meteorological year (TMY) is extracted from PVGIS datasets. The simulator currently uses the <code>Europe/Rome</code> timezone as <code>DatetimeIndex</code> for the data. The following photovoltaic module and inverter are selected to simulate the basic 1 kWp photovoltaic generator:</p>
+<ul>
+<li><strong>Module</strong>: <code>Shell_Solar_SM100_24__2003__E__</code>.</li>
+<li><strong>Inverter</strong>: <code>Enphase_Energy_Inc___M175_24_208_Sxx__208V_</code>.</li>
+</ul>
+<p>The possibility of setting different types of modules and inverters will be developed later. Currently, only fixed mount systems are modelled.</p>
+<p>The first step of the simulator creates a productivity profile for a 1 kWp generator. The productivity profile is then scaled with the capacity of the generator and derated over the years with a typical derating factor. This parameter can be changed in the <code>config.yml</code> file.</p>
+<p>The flow chart of the photovoltaic productivity simulator is shown in the following figure.</p>
+<p><img alt="Photovoltaic profile generator scheme" src="../../assets/schemes/Photovoltaic_profile_generator_scheme.png" width="1000" /></p>
+<p>A notebook file is available to run a standalone simulation for a photovoltaic generator:</p>
+<ul>
+<li><code>Photovoltaic_productivity_simulator_with_tutorial.ipynb</code>.</li>
+</ul>
+<p>In this notebook the user must specify:</p>
+<ul>
+<li><strong>Location</strong>.</li>
+<li><strong>Number of years of the simulation</strong>.</li>
+<li><strong>Capacity</strong>.</li>
+<li><strong>Tilt angle</strong>.</li>
+<li><strong>Azimuth angle</strong>.</li>
+<li><strong>Derating factor</strong>.</li>
+<li><strong>Directory to save the CSV file with results</strong>.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the CACER simulation, using <code>CACER_simulator.ipynb</code>, the inputs for the simulation of photovoltaic productivity are set in a different way through the <code>users CACER.xlsx</code> file.</p>
+</div>
 
 
 

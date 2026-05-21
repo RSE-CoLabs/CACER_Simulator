@@ -18,15 +18,15 @@ The model can simulate fixed or variable tariffs, such as PUN + SPREAD, by manip
 
 The bill is computed separately for each component, including energy, power, fixed components, duties, and VAT. The output includes timestep-level files for detailed result exploration and validation, plus monthly aggregations required by the financial modules.
 
-<div style="text-align: center;">
-  <img title="Bills_generator_scheme" src="../assets/schemes/Bills_generator_scheme.png" alt="Bills_generator_scheme" data-align="center" width="1000">
-</div>
+<p align="center">
+  <img src="../assets/schemes/Bills_generator_scheme.png" width="1000">
+</p>
 
 ## Financial Model and Discounted Cash Flow Analysis
 
-<div style="text-align: center;">
-  <img title="DCF_scheme" src="../assets/schemes/DCF_scheme.png" alt="DCF_scheme" data-align="center" width="1000">
-</div>
+<p align="center">
+  <img src="../assets/schemes/DCF_scheme.png" width="1000">
+</p>
 
 The module collects the financial inputs from the `files/inputs_FM.xlsx` file and creates a monthly breakdown of all inflated cash flows. The analysis includes the allocation of:
 

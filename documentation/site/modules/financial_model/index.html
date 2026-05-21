@@ -498,6 +498,8 @@
       
         
       
+        
+      
     
     
     
@@ -644,6 +646,34 @@
     
   
     Load Emulator v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../load_emulator_v2.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load Emulator v2 Details
   
 
     
@@ -1069,6 +1099,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Financial Model
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1085,6 +1133,47 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bills-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bills Simulator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#financial-model-and-discounted-cash-flow-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Financial Model and Discounted Cash Flow Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1242,7 +1331,49 @@
 
 
 <h1 id="financial-model">Financial Model</h1>
-<p>Descrizione financial model.</p>
+<h2 id="bills-simulator">Bills Simulator</h2>
+<p>The model creates electricity bills for a given user type based on the energy withdrawal coming out of the energy model. If the user type is a consumer, it computes the business-as-usual electricity bill. If the user is a prosumer, it also includes a scenario with self-generation and reduced electricity withdrawal from the grid.</p>
+<p>The model takes inputs from <code>files/mercato.yml</code>, where the user can manipulate market parameters and prices, define new tariffs depending on the type of user, and adjust parameters for time-dependent electricity prices.</p>
+<p>For each user type, the model takes the following inputs from <code>users CACER.xlsx</code>:</p>
+<ul>
+<li><strong>Tariff scheme</strong>: electricity time slots such as F1, F1+F2, or F1+F2+F3.</li>
+<li><strong>Supplier</strong>: the tariff adopted, as defined by the user in <code>files/mercato.yml</code>.</li>
+<li><strong>Category</strong>: domestic or non-domestic.</li>
+<li><strong>Range of contractual power</strong>.</li>
+<li><strong>Voltage level</strong>: BT, Low Voltage, or MT, Medium Voltage.</li>
+</ul>
+<p>The model can simulate fixed or variable tariffs, such as PUN + SPREAD, by manipulating the <code>supplier</code> field for each user. PUN data can be manually updated in <code>files/PZO/PUN_input_data.csv</code>.</p>
+<p>The bill is computed separately for each component, including energy, power, fixed components, duties, and VAT. The output includes timestep-level files for detailed result exploration and validation, plus monthly aggregations required by the financial modules.</p>
+<p align="center">
+  <img src="../assets/schemes/Bills_generator_scheme.png" width="1000">
+</p>
+
+<h2 id="financial-model-and-discounted-cash-flow-analysis">Financial Model and Discounted Cash Flow Analysis</h2>
+<p align="center">
+  <img src="../assets/schemes/DCF_scheme.png" width="1000">
+</p>
+
+<p>The module collects the financial inputs from the <code>files/inputs_FM.xlsx</code> file and creates a monthly breakdown of all inflated cash flows. The analysis includes the allocation of:</p>
+<ul>
+<li>Capex, grants, debt, and amortization.</li>
+<li>Opex from plants and CACER.</li>
+<li>Revenues from electricity bill savings, incentives, RID, and ARERA valorization.</li>
+<li>Taxes.</li>
+<li>Insurance.</li>
+<li>EBITDA, EBIT, and Profit Before Earnings.</li>
+</ul>
+<p>A discounted cash-flow analysis is then performed to calculate economic KPIs such as IRR, return on investment, and NPV.</p>
+<p>When assessing the economic sustainability of a CACER project, it is important to evaluate KPIs for all the stakeholders involved. A project can be sustainable overall while some users do not return on their own investments, which can jeopardize the entire operation.</p>
+<p>To assess the overall situation, the cash-flow analysis is performed on six separate levels:</p>
+<ul>
+<li><strong>Plant level</strong>: includes only cash flows related to the installation, opex, and revenues of the specific plant and investment.</li>
+<li><strong>User level</strong>: related to a single POD, whether consumer, prosumer, or producer.</li>
+<li><strong>Configuration level</strong>: for a multi-configuration CER, evaluates the cash flows of each single configuration to measure its state of health and overall contribution. Cash flows can differ significantly based on number of users, installed capacity, and access to PNRR funds.</li>
+<li><strong>Stakeholder level</strong>: evaluates the overall benefits for users with multiple PODs, such as Public Administrations, industries, or private entities.</li>
+<li><strong>CACER level</strong>: tracks cash flows on the bank account of the CACER entity, including incoming cash flows such as incentives from GSE and subscription fees, and outgoing cash flows such as incentive repartition, administration costs, legal entity establishment and kickoff costs, common services, and communication.</li>
+<li><strong>Project level</strong>: aggregates all cash flows of users, plants, configurations, and other project entities, counting each cash flow once. This level is needed to assess overall sustainability and economic impacts.</li>
+</ul>
+<p>The output of each financial analysis consists of an Excel file with details on monthly and yearly cash flows, designed to be easy to manipulate for further insights.</p>
 
 
 

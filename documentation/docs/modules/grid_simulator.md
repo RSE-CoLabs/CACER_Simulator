@@ -1,3 +1,3 @@
 # Grid simulator
 
-Descrizione grid simulator.
+🛠️ Work in progress...

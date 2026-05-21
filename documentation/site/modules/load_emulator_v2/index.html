@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#load-emulator-version-20" class="md-skip">
+        <a href="#domestic-load-emulator-version-20" class="md-skip">
           Skip to content
         </a>
       
@@ -498,6 +498,8 @@
       
         
       
+        
+      
     
     
     
@@ -644,6 +646,34 @@
     
   
     Load Emulator v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../load_emulator_v2.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load Emulator v2 Details
   
 
     
@@ -929,6 +959,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load Emulator v2
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -945,6 +993,146 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#emulator-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emulator Logic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#probabilistic-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Probabilistic Workflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profile-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile Classification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appliance-scheduling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appliance Scheduling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pure-base-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pure Base Load
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boiler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boiler
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#emulated-appliances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emulated Appliances
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operational-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational Sequence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1241,8 +1429,278 @@
   
 
 
-<h1 id="load-emulator-version-20">Load emulator version 2.0</h1>
-<p>Descrizione load emulator version 2.0.</p>
+<h1 id="domestic-load-emulator-version-20">Domestic Load Emulator Version 2.0</h1>
+<p>The <code>Load_profile_emulator_v2_with_tutorial.ipynb</code> notebook is the advanced version of the domestic load emulator developed after version 1.0. Version 2.0 extends the previous modelling logic by introducing a richer input structure:</p>
+<ul>
+<li>Metadata.</li>
+<li>Usage probabilities.</li>
+<li>Multi-use probabilities, for multiple daily activations.</li>
+<li>Appliance load profiles.</li>
+<li>Base-load profiles.</li>
+<li>Boiler profiles.</li>
+<li>National-level distributions of different user clusters.</li>
+<li>Technology ownership data by cluster.</li>
+<li>Monthly appliance activation probabilities.</li>
+</ul>
+<p>The result is a more detailed emulation, but also a slower and more computationally demanding one. It is especially suitable for short periods or studies where the detail of domestic consumption is central.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_logic_scheme.png" width="1000">
+</p>
+
+<h2 id="emulator-logic">Emulator Logic</h2>
+<p>The emulator builds 15-minute domestic electricity consumption profiles for one or more synthetic users. The approach is probabilistic: each user is first assigned to a socio-demographic cluster; the cluster determines the probability of owning each appliance; for the owned appliances, the model then samples month, day, number of activations, and 15-minute activation instants.</p>
+<p>At the end of the process, all device profiles, the base load, and the optional boiler are summed to obtain the total user profile.</p>
+<p>The workflow includes the definition of the number of users and simulation period, creation of the 15-minute and daily calendars, input import, appliance-level consumption emulation, result analysis, and export. Required inputs include appliance profiles, 15-minute usage probabilities, multi-use probabilities, cluster distribution, appliance ownership probabilities, and monthly activation probabilities.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_workflow.png" width="1000">
+</p>
+
+<h2 id="probabilistic-workflow">Probabilistic Workflow</h2>
+<p>The emulation chain can be read as a sequence of conditional random extractions:</p>
+<ul>
+<li><strong>Cluster assignment</strong>: each user is assigned to a cluster according to the <code>cluster_percentage_normalized</code> distribution.</li>
+<li><strong>Equipment assignment</strong>: for each appliance, the model evaluates the cluster-specific ownership probability. If the appliance is assigned, the number of devices in the same category is also sampled.</li>
+<li><strong>Daily activation matrix</strong>: for each day and appliance, the number of activations is sampled from a distribution that differs between <code>working_day</code> and <code>weekend</code>. This value is multiplied by a monthly flag, allowing some seasonal loads to be switched off.</li>
+<li><strong>15-minute scheduling</strong>: for each daily activation, the start time is sampled using a probability curve over 96 timesteps. The curve differs between weekdays and weekends.</li>
+<li><strong>Profile insertion</strong>: depending on the appliance type, the model inserts a standard cycle, a spike, a continuous value, or an on/off sequence.</li>
+<li><strong>Aggregation</strong>: the consumption dataframes of the single appliances are summed with the base load and the boiler, if present.</li>
+</ul>
+<h2 id="input-data">Input Data</h2>
+<p>The main inputs are read from Excel files configured in <code>config.yml</code>. In particular, <code>import_data_load_emulator_v2</code> loads appliance profiles, base-load statistics, 15-minute usage probabilities, multi-use probabilities, cluster metadata, and boiler profiles.</p>
+<p>The v2.0 emulator uses the following input files and datasets:</p>
+<ul>
+<li><code>metadata_load_emulator_v2.xlsx</code>: user-cluster metadata and appliance classifications used to organize the emulation process.</li>
+<li><code>df_clusters_distribution</code>: probability of belonging to a specific user cluster.</li>
+<li><code>df_clusters_equipment</code> and <code>df_clusters_equipment_multi</code>: appliance ownership and multi-ownership probabilities by cluster.</li>
+<li><code>df_monthly_usage_probability</code>: monthly activation probabilities, useful for seasonal appliances such as dryers, radiators, or thermal devices.</li>
+<li><code>usage_probability_v2.xlsx</code>: 15-minute appliance usage probabilities, with a distinction between working days and weekends when available.</li>
+<li><code>multi_usage_probability_v2.xlsx</code>: probabilities of multiple daily uses.</li>
+<li><code>appliances_load_profiles_v2.xlsx</code>: characteristic load profiles for different appliances, including 15-minute profiles and statistical profiles.</li>
+<li><code>base_load_profiles_v2.xlsx</code>: base-load profiles.</li>
+<li><code>boiler_profiles_v2.xlsx</code>: thermal profiles for boilers, with thermal load conversion through efficiency. In this emulation, only electric boilers are considered.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Operational meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dict_appliances_load</code></td>
+<td>Consumption profiles or statistics by appliance. For some appliances it contains 15-minute cycles; for others it contains mean and standard deviation.</td>
+</tr>
+<tr>
+<td><code>dict_appliances_load_info</code></td>
+<td>Derived dictionary that classifies each appliance as <code>s_profile</code>, <code>dc_profile</code>, <code>blp_profile</code>, or <code>blnp_profile</code>.</td>
+</tr>
+<tr>
+<td><code>df_usage_probability_wd</code> / <code>df_usage_probability_we</code></td>
+<td>Activation probability for each 15-minute timestep, differentiated between working days and weekends.</td>
+</tr>
+<tr>
+<td><code>dict_multi_usage_probability</code></td>
+<td>Probability of the number of daily activations: 0, 1, 2, and so on, by appliance and day type.</td>
+</tr>
+<tr>
+<td><code>df_clusters_distribution</code></td>
+<td>Probabilistic distribution of user clusters.</td>
+</tr>
+<tr>
+<td><code>df_clusters_equipment</code></td>
+<td>Probability of owning each appliance by cluster.</td>
+</tr>
+<tr>
+<td><code>df_clusters_equipment_multi</code></td>
+<td>Distribution of the number of owned devices by category.</td>
+</tr>
+<tr>
+<td><code>df_monthly_usage_probability</code></td>
+<td>Monthly activation probability, useful for seasonal loads such as dryers or radiators.</td>
+</tr>
+<tr>
+<td><code>dict_base_load_stats</code></td>
+<td>Mean, standard deviation, lower, and upper statistical profiles for the base load, differentiated between working days and weekends.</td>
+</tr>
+<tr>
+<td><code>dict_boiler_profiles</code></td>
+<td>Statistical profiles of domestic hot water thermal load for boilers, differentiated between working days and weekends.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="profile-classification">Profile Classification</h2>
+<p>The module distinguishes four appliance families. The classification is derived from the number of rows in the loaded profiles and from internal lists. If a profile has 96 rows, it can be a duty-cycle profile or a base load with pattern; freezer and fridge are forced as with-pattern profiles. If the profile does not have 96 rows, some appliances are treated as base loads without pattern, while the others are treated as spikes.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_profile_types.png" width="1000">
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Logic</th>
+<th>Typical appliances</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duty cycle</td>
+<td>Standard 15-minute profile over multiple timesteps. Each activation inserts a non-zero cycle into the dataframe.</td>
+<td><code>washing_machine</code>, <code>dishwasher</code>, <code>dryer</code>, <code>oven</code>, <code>induction_hob</code>, and other usage cycles.</td>
+<td>Consumption concentrated in a time sequence with a predefined shape.</td>
+</tr>
+<tr>
+<td>Spike</td>
+<td>Very short-duration appliance. The model samples the activation instant and an energy value from a normal distribution using mean and standard deviation.</td>
+<td><code>blender</code>, <code>coffee_machine</code>, <code>iron</code>, <code>microwave</code>, and small impulsive loads.</td>
+<td>A single kWh peak in the sampled 15-minute timestep.</td>
+</tr>
+<tr>
+<td>Base load with pattern</td>
+<td>Always-on or recurrent appliances with alternating on-cycle and off-cycle behaviour. The on-cycle uses a profile, while the off-cycle has random duration.</td>
+<td><code>fridge</code>, <code>freezer</code>.</td>
+<td>On/off sequences reproducing a recurrent pattern.</td>
+</tr>
+<tr>
+<td>Base load without pattern</td>
+<td>Continuous appliances without a specific daily shape. At each timestep, the value is sampled from a normal distribution using mean and standard deviation.</td>
+<td><code>dehumidifier</code>, <code>fan</code>, <code>internet_router</code>, <code>radiator</code>, <code>screen</code>, <code>sound_system</code>, <code>lamp</code>.</td>
+<td>Noisy continuous absorption without activation scheduling.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appliance-scheduling">Appliance Scheduling</h2>
+<p>For schedulable appliances, the process starts from the <code>daily_activation_matrix</code>. For each day, it contains <code>activation_flag</code>, <code>number_of_activation</code>, and <code>day_type</code>. If <code>activation_flag</code> is false, the day is skipped. If it is true, the model samples a load profile and a start timestep for each activation using the 15-minute probability curve of the appliance.</p>
+<p>For duty-cycle appliances, after the cycle has been inserted, the probability of already occupied slots is set to zero. This reduces overlaps within the same day. The start time is sampled from the 15-minute distribution, and the non-zero sequence of the profile is then inserted into <code>appliance_consumption_kWh</code>.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_duty_cycle_scheduling.png" width="1000">
+</p>
+
+<h2 id="pure-base-load">Pure Base Load</h2>
+<p>The pure base load is not scheduled like an appliance. It is a daily statistical background profile generated directly for each calendar day. For the current <code>day_type</code>, the model reads <code>mean</code> and <code>std</code> from <code>dict_base_load_stats</code>; for each of the 96 timesteps, it samples a value from a normal distribution.</p>
+<p>Negative values are clipped to zero and then converted from Wh to kWh by dividing by 1000. The daily vector of 96 values is written into <code>base_load_consumption_kWh</code>.</p>
+<p>In practice, the pure base load represents residual consumption that is not explicitly attributed to the scheduled appliances: standby loads, small distributed consumption, and the statistical background consumption of the dwelling.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_base_load_example.png" width="1000">
+</p>
+
+<h2 id="boiler">Boiler</h2>
+<p>The boiler is treated separately from the other appliances. If <code>simulate_boiler=True</code> and the user owns a boiler, a <code>boiler</code> entry is created in the user dictionary.</p>
+<p>The model first samples an efficiency value from a normal distribution centred around 0.97 with a standard deviation of 0.01, rounded to two decimals. It then randomly selects a boiler profile family among the available ones. For each day, it uses the statistical profile consistent with <code>working_day</code> or <code>weekend</code>.</p>
+<p>For each day, a 15-minute thermal load profile is sampled from <code>normal(mean, std)</code>, with negative values clipped to zero. Electric consumption is calculated by dividing the thermal load by the efficiency. If <code>all_boiler_profiles=False</code>, the code restricts the choice to <code>boiler_1</code> and <code>boiler_4</code>, which are indicated in the code comments as the lower average-consumption profiles.</p>
+<p align="center">
+  <img src="../assets/schemes/load_emulator_v2_boiler_example.png" width="1000">
+</p>
+
+<h2 id="emulated-appliances">Emulated Appliances</h2>
+<p>The effective appliance list depends on the columns of the <code>clusters_equipment</code> sheet and on the profiles available in <code>appliances_load_profiles_v2.xlsx</code>. Based on the code and tutorial, the following categories are explicitly managed:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Appliances / loads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base load with pattern</td>
+<td><code>fridge</code>; <code>freezer</code></td>
+</tr>
+<tr>
+<td>Base load without pattern</td>
+<td><code>dehumidifier</code>; <code>fan</code>; <code>internet_router</code>; <code>radiator</code>; <code>screen</code>; <code>sound_system</code>; <code>lamp</code></td>
+</tr>
+<tr>
+<td>Duty cycle / usage cycles</td>
+<td><code>washing_machine</code>; <code>dishwasher</code>; <code>dryer</code>; <code>induction_hob</code>; other appliances with 96-row 15-minute profiles in the profile file</td>
+</tr>
+<tr>
+<td>Spike / small impulsive loads</td>
+<td><code>blender</code>; <code>coffee_machine</code>; other appliances with mean/std statistics and one-timestep duration</td>
+</tr>
+<tr>
+<td>Boiler</td>
+<td><code>boiler</code>, with dedicated thermal profiles for <code>working_day</code> and <code>weekend</code></td>
+</tr>
+<tr>
+<td>Lighting</td>
+<td><code>lamp</code>, also managed through a dedicated <code>scheduling_light</code> function that samples average power, standard deviation, and duration in 15-minute timesteps</td>
+</tr>
+</tbody>
+</table>
+<h2 id="operational-sequence">Operational Sequence</h2>
+<p>The main functions called in the domestic load emulator v2.0 tutorial are:</p>
+<table>
+<thead>
+<tr>
+<th>Function / step</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_calendar_dfs(start_day, end_day)</code></td>
+<td>Creates <code>calendar_df</code> and <code>calendar_daily</code>, respectively the timestep-level and daily time bases.</td>
+</tr>
+<tr>
+<td><code>import_data_load_emulator_v2()</code></td>
+<td>Imports all v2 emulator inputs from <code>files/energy/input/load_emulator/input_emulator_v2/</code>.</td>
+</tr>
+<tr>
+<td><code>remove_specific_appliance()</code></td>
+<td>Optional step that sets to zero the assignment probability of a specific appliance, for example <code>induction_hob</code>.</td>
+</tr>
+<tr>
+<td><code>load_emulator_v2()</code></td>
+<td>Creates users, assigns clusters and appliances, schedules profiles, simulates the boiler if required, and aggregates consumption.</td>
+</tr>
+<tr>
+<td><code>export_csv_emulator_v2()</code></td>
+<td>Exports the <code>stacked_df</code> dataframe with total user profiles.</td>
+</tr>
+<tr>
+<td><code>export_mean_profile_load_emulator_v2()</code></td>
+<td>Optional step that calculates and exports the average aggregated profile for statistical analysis.</td>
+</tr>
+<tr>
+<td><code>explore_dictionary()</code></td>
+<td>Optional helper function to explore the <code>dict_users_emulator_v2.pkl</code> pickle file.</td>
+</tr>
+<tr>
+<td><code>analyze_results()</code>, <code>plot_average_load_profile()</code>, <code>plot_average_appliance_load_profile()</code></td>
+<td>Optional analysis and visualization functions for user-level and appliance-level results.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="output-structure">Output Structure</h2>
+<p>The main result is <code>dict_users</code>, which contains, for each user, the assigned cluster, equipment, activation matrices, consumption dataframes for each appliance, base load, and aggregated total load.</p>
+<p>In parallel, the emulator generates <code>stacked_df</code>, a dataframe containing the total profile of each user. The <code>export_csv_emulator_v2</code> function saves the total profile as CSV, using a different filename when a specific appliance is emulated.</p>
+<p>The analysis functions can be used to explore the dictionary, extract the consumption dataframe of a single user, plot average working-day and weekend profiles, and evaluate the annual breakdown by appliance.</p>
+<p>The main tutorial outputs are:</p>
+<ul>
+<li><code>dict_users_emulator_v2.pkl</code>: complete dictionary containing users, appliances, profiles, detailed consumption, and assignment information.</li>
+<li><code>emulated_load_profile_v2.csv</code>: dataframe with total profiles for each emulated user.</li>
+<li><code>mean_profile_load_emulator_v2.csv</code>: average profile of the emulated users, optional.</li>
+<li><code>&lt;appliance&gt;_emulated_load_profile_v2.csv</code>: specific output when a single appliance is emulated or analysed, optional.</li>
+<li><code>&lt;appliance&gt;_mean_profile_load_emulator_v2.csv</code>: appliance-specific average profile, optional.</li>
+<li>Diagnostic plots: if <code>show_results</code> is <code>True</code>, plots of profiles, consumption, and appliance/user comparisons are generated.</li>
+</ul>
+<h2 id="code-references">Code References</h2>
+<ul>
+<li>Notebook: <code>Load_profile_emulator_v2_with_tutorial.ipynb</code>, especially the <code>Get input data</code> section and the call to <code>load_emulator_v2</code>.</li>
+<li>Module: <code>src/Functions_Load_Emulator_v2.py</code>.</li>
+<li>Profile classification: <code>create_dict_appliances_load_info</code> and <code>create_list_profile_type</code>.</li>
+<li>Cluster and equipment assignment: <code>assign_cluster_to_users</code>, <code>assign_equipment_to_users</code>.</li>
+<li>Daily activations: <code>create_daily_activation_matrix</code> and <code>monthly_activation_probability</code>.</li>
+<li>Duty-cycle scheduling: <code>scheduling_duty_cycle_appliances</code>, <code>extract_next_activation_time</code>, <code>extract_load_profile</code>, <code>create_scheduling</code>.</li>
+<li>Spike scheduling: <code>scheduling_spike_appliances</code>.</li>
+<li>Pure base load: <code>create_base_load_profiles</code>.</li>
+<li>Base load with or without pattern: <code>create_base_load_with_pattern_profiles</code>, <code>create_base_load_without_pattern_profiles</code>.</li>
+<li>Boiler: <code>create_boiler_profiles</code> and <code>scheduling_boiler</code>.</li>
+<li>Aggregation and export: <code>aggregate_load_profile</code>, <code>export_csv_emulator_v2</code>.</li>
+</ul>
 
 
 
