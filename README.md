@@ -63,19 +63,16 @@ git clone https://github.com/RSE-CoLabs/CACER_Simulator.git
    ```bash
    python -m venv .venv
    ```
-
 3. Activate it:
 
    ```bash
    .venv\Scripts\activate
    ```
-
 4. Install the required libraries:
 
    ```bash
    pip install -r requirements.txt
    ```
-
 5. Open the tutorial notebooks and run them cell by cell. If the code does not run smoothly, check the warnings and verify that the notebook kernel is using the `.venv` environment.
 
 ### Method 2
@@ -121,13 +118,12 @@ check_venv_kernel(venv_name='.venv')
 - `src/`: Python source modules for energy modelling, financial modelling, load emulation, grid analysis, utilities, and virtual environment setup.
 - `config.yml`: main configuration file with simulation parameters and paths.
 - `requirements.txt`: Python dependencies.
-- `CACER_simulator.ipynb`: main CACER simulator notebook.
-- `CACER_simulator_with_tutorial.ipynb`: tutorial version of the main CACER simulator notebook.
-- `Photovoltaic_productivity_simulator_with_tutorial.ipynb`: standalone photovoltaic productivity tutorial notebook.
-- `Load_profile_emulator_v1_with_tutorial.ipynb`: tutorial notebook for the first domestic load profile emulator.
-- `Load_profile_emulator_v2_with_tutorial.ipynb`: tutorial notebook for the second domestic load profile emulator.
-- `Load_flow_simulator.ipynb`: notebook for load-flow and grid-oriented analyses.
-- `Reporting.ipynb`: notebook used to generate simulation reports.
+- `0. Tutorial_CACER_simulator.ipynb`: tutorial version of the main CACER simulator notebook.
+- `1. Tutorial_photovoltaic_simulator.ipynb`: standalone photovoltaic productivity tutorial notebook.
+- `2. Tutorial_domestic_load_emulator_v1.ipynb`: tutorial notebook for the first domestic load profile emulator.
+- `3. Tutorial_domestic_load_emulator_v2.ipynb`: tutorial notebook for the second domestic load profile emulator.
+- `4. Tutorial_power_flow_simulator.ipynb`: notebook for load-flow and grid-oriented analyses.
+- `5. Reporting.ipynb`: notebook used to generate simulation reports.
 - `users CACER.xlsx`: example Excel file with user data.
 
 ---
