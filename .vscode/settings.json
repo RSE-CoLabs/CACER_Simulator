@@ -1,0 +1,9 @@
+{
+    "workbench.editor.autoLockGroups": {
+        "imagePreview.previewEditor": true,
+        "jupyter-data-wrangler": true,
+        "mainThreadWebview-markdown.preview": true,
+        "workbench.input.interactive": true
+    },
+    "workbench.editor.customLabels.enabled": false
+}

@@ -1827,6 +1827,53 @@ def plot_average_load_profile(user_id, df_user_consumption, calendar_df):
 
 ##########################################################################
 
+def plot_user_appliances_consumption(
+    user_id,
+    df_user_consumption,
+    resample='1H',
+    include_base_load=True,
+    include_zero_consumption=False,
+    kind='area',
+):
+    df = df_user_consumption.copy()
+    df.index = pd.to_datetime(df.index)
+
+    columns_to_exclude = ['total_consumption']
+    if not include_base_load:
+        columns_to_exclude.append('base_load')
+
+    appliance_columns = [col for col in df.columns if col not in columns_to_exclude]
+
+    if not include_zero_consumption:
+        appliance_columns = [col for col in appliance_columns if df[col].sum() > 0]
+
+    if len(appliance_columns) == 0:
+        raise ValueError(f"No appliance consumption available for {user_id}.")
+
+    df_plot = df[appliance_columns]
+    if resample is not None:
+        df_plot = df_plot.resample(resample).sum()
+
+    if kind == 'line':
+        fig = px.line(df_plot, x=df_plot.index, y=appliance_columns)
+    elif kind == 'area':
+        fig = px.area(df_plot, x=df_plot.index, y=appliance_columns)
+    else:
+        raise ValueError("kind must be 'area' or 'line'.")
+
+    fig.update_layout(
+        title=f"Appliance consumption for {user_id}",
+        xaxis_title="Time",
+        yaxis_title="Consumption (kWh)",
+        legend_title_text="Appliance",
+        hovermode="x unified",
+    )
+    fig.show()
+
+    return fig
+
+##########################################################################
+
 def plot_average_appliance_load_profile(df_user_consumption, calendar_df):
     
     for a in df_user_consumption.columns:
@@ -2032,7 +2079,7 @@ def import_data_load_emulator_v2():
 
 ##########################################################################
 
-def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate_boiler = True, all_boiler_profiles = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
+def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, name = None, simulate_boiler = True, all_boiler_profiles = True, show_results = False, save_all_results = True, specific_appliance = None, parallelize = True, max_workers = 1):
 
     n_iterations = 12
     run_base_load = specific_appliance is None
@@ -2280,7 +2327,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
             suppress_printing(save_dictionary_to_pickle, dict_users, path_results_emulator + "dict_users_emulator_v2.pkl")
         
-        stacked_df = export_csv_emulator_v2(dict_users, specific_appliance)
+        stacked_df = export_csv_emulator_v2(dict_users, name, specific_appliance)
 
         pbar.update(1)
         
@@ -2290,7 +2337,7 @@ def load_emulator_v2(num_user, data_input, calendar_df, calendar_daily, simulate
 
 ##########################################################################
 
-def export_csv_emulator_v2(dict_users, specific_appliance):
+def export_csv_emulator_v2(dict_users, name, specific_appliance):
 
     csv_df = pd.DataFrame(index = dict_users['user_0']['appliances']['total_consumption'].index, columns = dict_users.keys())
 
@@ -2300,9 +2347,9 @@ def export_csv_emulator_v2(dict_users, specific_appliance):
     config = yaml.safe_load(open("config.yml", 'r'))
 
     if specific_appliance is None:
-        path_csv = config['foldername_result_emulator'] + "emulated_load_profile_v2.csv"
+        path_csv = config['foldername_result_emulator'] + f"emulated_load_profile_v2_{name}.csv"
     else:
-        path_csv = config['foldername_result_emulator'] + specific_appliance + '_emulated_load_profile_v2.csv'
+        path_csv = config['foldername_result_emulator'] + specific_appliance + f'_emulated_load_profile_v2_{name}.csv'
     
     csv_df.to_csv(path_csv)
 
@@ -2419,16 +2466,16 @@ def run_load_emulator_v2(simulate_boiler = True, all_boiler_profiles = True, sho
 
 ##########################################################################
 
-def export_mean_profile_load_emulator_v2(stacked_df, specific_appliance = None):
+def export_mean_profile_load_emulator_v2(stacked_df, name, specific_appliance = None):
     
     mean_profile = stacked_df.mean(axis=1)
 
     config = yaml.safe_load(open("config.yml", 'r'))
 
     if specific_appliance is None:
-        path_csv = config['foldername_result_emulator'] + 'mean_profile_load_emulator_v2.csv'
+        path_csv = config['foldername_result_emulator'] + f'mean_profile_load_emulator_v2_{name}.csv'
     else:
-        path_csv = config['foldername_result_emulator'] + specific_appliance + '_mean_profile_load_emulator_v2.csv'
+        path_csv = config['foldername_result_emulator'] + specific_appliance + f'_mean_profile_load_emulator_v2_{name}.csv'
 
     mean_profile = pd.DataFrame(mean_profile)
 
