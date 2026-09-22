@@ -2,6 +2,7 @@ from random import random
 import yaml
 from simple_colors import blue, green, red
 from tqdm.auto import tqdm
+import numpy as np
 
 from src.hvac_functions.classes.heatPump import HeatingModeHeatPump, CoolingModeHeatPump, HeatPumpAuxiliaries
 from src.hvac_functions.classes.buildingModel import BuildingModel
@@ -86,7 +87,7 @@ class HpUserConfig:
         #--------------------------------------- building file selection --------------------------------------- 
 
         if self.hvac_type == 'autonomous':
-            range_building_type = [random.randint(1, 10)] # For autonomous users, only one building file is used
+            range_building_type = [np.random.default_rng().integers(1, 10)] # For autonomous users, only one building file is used
 
         else:
             range_building_type = range(user_properties['num']) # For centralized users, multiple building files are used based on the number of users of this type (but for now we set it to 1 for all user types)
