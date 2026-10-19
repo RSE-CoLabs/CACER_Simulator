@@ -102,8 +102,6 @@ def run_user_type_bill(user_type):
         if scheme == "schema_1":
             user_load["energy_price"] = me_quota_energia_dict["F1"] # €/kWh, senza variazione annuale
         else:
-            me_quota_energia_dict["F2"] = me_quota_energia_dict["F1"]
-            me_quota_energia_dict["F3"] = me_quota_energia_dict["F2"]
             user_load["fascia"] = get_calendar().set_index("datetime")["fascia"]
             assert not  user_load["fascia"].isna().any(), "ERROR: There are NaN values in the fascia columnns"
             user_load["fascia"] = user_load["fascia"].replace({1: "F1", 2: "F2", 3: "F3"})
