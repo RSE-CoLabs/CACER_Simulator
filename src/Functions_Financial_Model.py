@@ -459,16 +459,17 @@ def incentives():
             print(f"F_pnrr = {F_pnrr}")
         
         F_pnrr = 0 if np.isnan(F_pnrr) else F_pnrr
-        # calculating the incentive tariff and incentives for given plant
-        df_merged["tariffa_premio"] = (np.minimum(cap_parte_variabile, TP_base + np.maximum(0, 180 - df_merged["PZO"])) + FC_zonale) * (1 - F_pnrr)
+        # calculating the incentive tariff and incentives for given plant in €/kWh
+        # we divide by 1000 to pass from €/MWh to €/kWh
+        df_merged["tariffa_premio"] = (np.minimum(cap_parte_variabile / 1000, TP_base / 1000 + np.maximum(0, 180 - df_merged["PZO"])) + FC_zonale / 1000) * (1 - F_pnrr) # €/kWh
 
         # TO BE FIXED: put in a better position, no need to arrive up to here
         if recap["type_of_cacer"] == "NO_CACER":
             df_merged["tariffa_premio"] = 0 # overwriting 
             print("No CACER --> no incentives")
 
-        print("Average TIP: €/MWh ", df_merged["tariffa_premio"].mean())
-        df_merged["tariffa_premio"] = df_merged["tariffa_premio"] / 1000 # from €/MWh to €/kWh
+        print("Average TIP: €/kWh ", df_merged["tariffa_premio"].mean())
+        # df_merged["tariffa_premio"] = df_merged["tariffa_premio"] / 1000 # from €/MWh to €/kWh
 
         # erasing the TIP tariff after year 20 ###################################################
         months_matrix = get_monthly_calendar().set_index("month")["month_number"] 
@@ -763,7 +764,7 @@ def read_yaml_file_RID():
 def generate_PZO_values():
     """we calculate the values of PZO in €/kWh for each hour for each year of the project
     Outputs:
-        PZO_merged             hourly values of the PZO in € / kWh for each year of the project [df]
+        PZO_merged             hourly values of the PZO in €/kWh for each year of the project [df]
     """
 
     yearly_variation, PMG_price, zona_di_mercato = read_yaml_file_RID() # si imporanto i valori di variazione annuale del PZO, il PMG e la zona di mercato per l'analisi in esame
