@@ -1799,7 +1799,7 @@ def cash_flows_per_user(user = "CACER"):
 
     df_totals["capex_total"] = 0
     df_totals["da_total"] = 0
-    df_totals["debt_interest"] = 0
+    df_totals["debt_installment"] = 0
     df_totals["opex_total"] = 0
     df_totals["revenues_total"] = 0
 
@@ -1822,7 +1822,7 @@ def cash_flows_per_user(user = "CACER"):
         
         df_totals["capex_total"] += df[capex_cols].sum(axis=1)
         df_totals["da_total"] += df[da_cols].sum(axis=1)
-        df_totals["debt_interest"] += df["debt_interest"]
+        df_totals["debt_installment"] += df["debt_installment"]
         df_totals["opex_total"] += df[opex_cols].sum(axis=1)
         df_totals["revenues_total"] += df[revenues_cols].sum(axis=1)
     
@@ -2295,11 +2295,15 @@ def cash_flows_per_plant(plant):
 
         df_debt = debt_and_interest_per_plant(loan, interest_rate_yrs, loan_start_month, loan_duration_yrs)
         df["debt_disbursment/payment"] = df_debt["debt_disbursment/payment"]
+        df["debt_disbursment"] = df_debt["debt_disbursment"]
+        df["debt_installment"] = df_debt["debt_installment"]
         df["debt_interest"] = df_debt["debt_interest"]
     else: 
         df_debt = pd.DataFrame()
         df["debt_disbursment/payment"] = 0
         df["debt_interest"] = 0
+        df["debt_disbursment"] = 0
+        df["debt_installment"] = 0
 
     ###########################################################################################################
     # OPEX ####################################################################################################
@@ -2337,7 +2341,7 @@ def cash_flows_per_plant(plant):
     df_opex.T.to_excel(writer, sheet_name= "Opex") #saving for the record
     df_revenues.T.to_excel(writer, sheet_name= "Revenues") #saving for the record
 
-    totals_cols = ["month","capex_total","da_total","debt_interest","opex_total","revenues_total"]
+    totals_cols = ["month","capex_total","da_total","debt_disbursment","debt_installment","opex_total","revenues_total"]
     df[totals_cols].T.to_excel(writer, sheet_name= "Totals") #saving for the record
     
     writer.close()
@@ -2355,21 +2359,21 @@ def debt_and_interest_per_plant(loan, interest_rate_yrs, loan_start_month, loan_
     # payments
     periods = range(loan_start_month, loan_end_month+1)
 
-    interest_payment = npf.ipmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=-loan)
-    principal_payment = npf.ppmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=-loan)
+    interest_payment = npf.ipmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=loan)
+    principal_payment = npf.ppmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=loan)
 
     # cash flows
     cf_data = {'debt_interest': interest_payment, 'debt_principal': principal_payment}
     cf_table = pd.DataFrame(data=cf_data, index=periods)
 
+    cf_table['debt_installment'] = cf_table['debt_interest'] + cf_table['debt_principal']
+
     cf_table['debt_disbursment'] = 0
     cf_table.loc[loan_start_month, 'debt_disbursment'] = loan
 
-    cf_table['debt_payment'] = cf_table['debt_interest'] + cf_table['debt_principal']
-
     cf_table['debt_ending_balance'] = loan - cf_table['debt_principal'].cumsum()
 
-    cf_table['debt_disbursment/payment'] = cf_table['debt_disbursment'] - cf_table['debt_payment']
+    cf_table['debt_disbursment/payment'] = cf_table['debt_disbursment'] - cf_table['debt_installment']
 
     cf_table['debt_beginning_balance'] = [loan] + list(cf_table['debt_ending_balance'])[:-1]
 
