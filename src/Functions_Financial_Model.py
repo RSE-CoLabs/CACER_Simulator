@@ -438,10 +438,10 @@ def incentives():
         plant_power_capacity = max(registry_plants[plant]["pv"], registry_plants[plant]["wind"])
 
         # obtaining the factors for the incentive's tariff calculation, as per Decree
-        if plant_power_capacity >= 600: 
+        if plant_power_capacity > 600: 
             TP_base = 60
             cap_parte_variabile = 100
-        elif plant_power_capacity >= 200: 
+        elif plant_power_capacity > 200: 
             TP_base = 70
             cap_parte_variabile = 110
         else : 
