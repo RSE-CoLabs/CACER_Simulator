@@ -2341,46 +2341,79 @@ def cash_flows_per_plant(plant):
     df_opex.T.to_excel(writer, sheet_name= "Opex") #saving for the record
     df_revenues.T.to_excel(writer, sheet_name= "Revenues") #saving for the record
 
-    totals_cols = ["month","capex_total","da_total","debt_disbursment","debt_installment","opex_total","revenues_total"]
+    totals_cols = ["month","capex_total","da_total","debt_disbursment","debt_installment","debt_disbursment/payment", "opex_total","revenues_total"]
     df[totals_cols].T.to_excel(writer, sheet_name= "Totals") #saving for the record
     
     writer.close()
 
 def debt_and_interest_per_plant(loan, interest_rate_yrs, loan_start_month, loan_duration_yrs):
-    """function adapted from: https://www.toptal.com/finance/cash-flow-consultants/python-cash-flow-model
-    return a dataframe with interest and principal payments, beginning and ending balances, and net Disbursment/Repayment.
-    The loan shall be real (adjusted for inflation) and not nominal.   
     """
-
+    Calculate the monthly loan amortization schedule.
+ 
+    Returns a DataFrame with interest payments, principal repayments,
+    installments, loan disbursement, outstanding debt balances,
+    and net financing cash flows.
+ 
+    All monetary values are assumed to be expressed in real terms.
+    """
+ 
     print(f"Loan: € {loan:,.2f} at interest rate of {interest_rate_yrs*100:,.1f}% for {loan_duration_yrs} years")
-
-    loan_end_month = loan_start_month + loan_duration_yrs*12
-
-    # payments
-    periods = range(loan_start_month, loan_end_month+1)
-
-    interest_payment = npf.ipmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=loan)
-    principal_payment = npf.ppmt(rate=interest_rate_yrs / 12, per=periods, nper=loan_end_month, pv=loan)
-
-    # cash flows
-    cf_data = {'debt_interest': interest_payment, 'debt_principal': principal_payment}
-    cf_table = pd.DataFrame(data=cf_data, index=periods)
-
-    cf_table['debt_installment'] = cf_table['debt_interest'] + cf_table['debt_principal']
-
-    cf_table['debt_disbursment'] = 0
+ 
+    # Loan parameters
+    nper = int(loan_duration_yrs * 12)
+    loan_end_month = loan_start_month + nper
+    monthly_rate = interest_rate_yrs / 12
+ 
+    if loan < 0 or nper <= 0 or interest_rate_yrs <= -1:
+        raise ValueError("Invalid loan parameters")
+ 
+    # Monthly periods (including disbursement month)
+    periods = range(loan_start_month, loan_end_month + 1)
+    payment_periods = np.arange(1, nper + 1)
+ 
+    # Initialize cash flow table
+    cf_table = pd.DataFrame(index=periods)
+ 
+    cf_table['debt_interest'] = 0.0
+    cf_table['debt_principal'] = 0.0
+ 
+    # Interest and principal payments
+    # Repayments start in the month after disbursement
+    cf_table.loc[loan_start_month + 1:loan_end_month, 'debt_interest'] = npf.ipmt(
+        rate=monthly_rate,
+        per=payment_periods,
+        nper=nper,
+        pv=loan
+    )
+ 
+    cf_table.loc[loan_start_month + 1:loan_end_month, 'debt_principal'] = npf.ppmt(
+        rate=monthly_rate,
+        per=payment_periods,
+        nper=nper,
+        pv=loan
+    )
+ 
+    # Monthly installments (negative cash flows)
+    cf_table['debt_installment'] = (cf_table['debt_interest'] + cf_table['debt_principal'])
+ 
+    # Loan disbursement (positive cash flow)
+    cf_table['debt_disbursment'] = 0.0
     cf_table.loc[loan_start_month, 'debt_disbursment'] = loan
-
-    cf_table['debt_ending_balance'] = loan - cf_table['debt_principal'].cumsum()
-
-    cf_table['debt_disbursment/payment'] = cf_table['debt_disbursment'] - cf_table['debt_installment']
-
-    cf_table['debt_beginning_balance'] = [loan] + list(cf_table['debt_ending_balance'])[:-1]
-
+ 
+    # Outstanding debt at the end of each month
+    cf_table['debt_ending_balance'] = (loan + cf_table['debt_principal'].cumsum()).clip(lower=0)
+ 
+    # Remove numerical rounding errors at maturity
+    cf_table.loc[loan_end_month, 'debt_ending_balance'] = 0.0
+ 
+    # Net financing cash flow
+    cf_table['debt_disbursment/payment'] = (cf_table['debt_disbursment'] + cf_table['debt_installment'])
+ 
+    # Align results with the financial model template
     df = get_FM_template()
-    df = df[["month"]]
-    df = pd.concat((df,cf_table),axis=1).fillna(0)
-
+    df = df[['month']]
+    df = pd.concat((df, cf_table), axis=1).fillna(0)
+ 
     return df
 
 ####################################################################################################################################
