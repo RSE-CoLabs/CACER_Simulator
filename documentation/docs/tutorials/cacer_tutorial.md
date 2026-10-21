@@ -1,3 +1,0 @@
-# CACER Tutorial
-
-Tutorial completo.

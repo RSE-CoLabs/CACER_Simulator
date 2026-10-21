@@ -1,0 +1,1 @@
+"""District heating integration placeholder."""

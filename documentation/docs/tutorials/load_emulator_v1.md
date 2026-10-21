@@ -1,3 +1,0 @@
-# Load Profile Domestic Users Emulator
-
-🛠️ Work in progress...

@@ -1,3 +1,0 @@
-# Photovoltaic Productivity Simulator
-
-🛠️ Work in progress...

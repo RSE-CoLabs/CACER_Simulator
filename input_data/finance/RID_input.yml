@@ -1,0 +1,45 @@
+corrispettivi_unitari:
+  
+  PV:
+    
+    scaglione_0: 0 # [€ / kWp] per potenze di picco inferiori a 1 kWp
+    threshold_1: 0.7 # [€ / kWp] per potenze di picco comprese fra 1 e 20 kWp
+    threshold_2: 0.65 # [€ / kWp] per potenze di picco comprese fra 20 e 200 kWp
+    threshold_3: 0.6 # [€ / kWp] per potenze di picco superiori a 200 kWp
+    massimale: 10000 # [€ / anno]
+
+PMG: 
+  
+  PV: 44 # [€ / MWh]
+
+variazione_annua: [0, # 2023
+                   0, # 2024
+                   0.2, # 2025 
+                   0.1, # 2026
+                   0.11, # 2027
+                   0.13, # 2028
+                   0, # 2029
+                   0, # 2030
+                   0, # 2031
+                   0, # 2032
+                   0, # 2033
+                   0, # 2034
+                   0, # 2035
+                   0.14, # 2036
+                   0, # 2037
+                   0, # 2038
+                   0, # 2039
+                   0, # 2040
+                   0, # 2041
+                   0, # 2042
+                   0, # 2043
+                   0, # 2044
+                   0, # 2045
+                   0, # 2046
+                   0, # 2047
+                   0, # 2048
+                   0, # 2049
+                   0, # 2050
+                   0, # 2051
+                   0] # 2052
+                   # variazione annua del PZO

@@ -1,3 +1,0 @@
-# CACER simulator
-
-🛠️ Work in progress...

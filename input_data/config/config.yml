@@ -1,0 +1,105 @@
+# time simulation
+start_date: 2026-01-01
+project_lifetime_yrs: 1
+
+type_of_cacer: CER # CER; AUC; AID; NO_CACER
+flag_condominium_bills: True # if true all the users in the condominium pay the bill, otherwise only the admin user pays the bill
+
+# time interval
+delta_t: "15Min" # "15Min" or "1H"
+
+# location
+provincia_it: Milano
+
+# random factor to be applied to the load, in %. Es 5 means 5%
+rand_factor: 5 # [%]
+rand_factor_noCER: 2 # [%]
+
+perdite_MT: 0.023 # TIS
+perdite_BT: 0.052 # TIS
+TRASe: 10.57 # [€/MWh] TRASe - Parte unitaria variabile della tariffa di trasmissione (CUafa),m
+BTAU: 0.65 # [€/MWh] corrispettivo unitario di autoconsumo forfetario mensile CUAfb),m pari al valore più elevato della componente variabile di distribuzione definita per le utenze per altri usi in bassa tensione (BTAU) vigenti nel mese m-esimo
+Cpr_bt: 0.0260
+Cpr_mt: 0.0120
+
+dod: 0.8 # dept of discharge for Li_ion battery
+round_trip_efficiency: 0.9 # round trip efficiency for Li-ion battery
+pv_derating_factor: 0.01  # derating factor for photovoltaic generators
+battery_derating_factor: 0.0000635 # derating factor for energy storing capacity for Li-ion battery, in p.u. per cycle (es. 0.0000635 is 0.00635% loss per complete cycle, so 80% @3500 cycles)
+
+# mercato
+market_scenario: dossier_rivisto_2 # mettere una delle tipologie di scenario possibili, vedere file fornitori.yml (pensare se modificarne il nome)
+
+# load_emulator versione 
+load_emulator_version: version_1 # it is possible to select two different versions of the load_emulator: version_1 (simplified) and version_2 (advanced)
+
+###########
+# filename
+###########
+
+# configuration inputs
+filename_comuni_italiani: input_data\\config\\comuni_italiani.csv
+filename_giorni_tipo: input_data\\config\\fasce.csv # standard daily distribution of tariffs F1, F2 and F3 in working day, sat, sun
+
+# grid inputs
+filename_data: input_data\\grid\\example_network.xlsx
+foldername_template: input_data\\config\\reporting\\grid\\template\\
+report_parameters_yml: input_data\\config\\reporting\\grid\\report_parameters.yml
+
+# load inputs
+filename_user_load_arera: input_data\\load\\profiles\\prelievo_orario_ARERA.csv # loads
+filename_carico_input: input_data\\load\\profiles\\curve_carico_input.xlsx
+
+# load emulator v1 inputs
+filename_usage_probability: input_data\\load\\emulator_v1\\appliance_usage_probability_v1.xlsx
+filename_appliances_load: input_data\\load\\emulator_v1\\appliance_load_profile_v1.xlsx
+
+# load emulator v2 inputs
+filename_metadata_v2: input_data\\load\\emulator_v2\\0. metadata_load_emulator_v2.xlsx
+filename_usage_probability_v2: input_data\\load\\emulator_v2\\1. usage_probability_v2.xlsx
+filename_multi_usage_probability_v2: input_data\\load\\emulator_v2\\2. multi_usage_probability_v2.xlsx
+filename_appliances_load_profiles_v2: input_data\\load\\emulator_v2\\3. appliances_load_profiles_v2.xlsx
+filename_base_load_profiles_v2: input_data\\load\\emulator_v2\\4. base_load_profiles_v2.xlsx
+filename_boiler_profiles_v2: input_data\\load\\emulator_v2\\5. boiler_profiles_v2.xlsx
+
+# finance inputs
+CER_fees: input_data\\finance\\CER_fees.yml
+filename_input_PZO: input_data\\finance\\hourly_PZO_input.csv
+filename_input_PUN: input_data\\finance\\PUN_input_data.csv
+filename_RID_input: input_data\\finance\\RID_input.yml
+filename_report: input_data\\config\\reporting\\report.yml
+filename_mercato: input_data\\finance\\mercato.yml
+filename_input_FM_excel: input_data\\finance\\inputs_FM.xlsx
+
+# energy and HVAC inputs
+folder_weather_data: input_data\\energy\\weather\\ # Directory weather data files
+filename_weather_data: input_data\\energy\\weather\\weather_data.csv # Filename weather data files
+filename_future_weather_data: input_data\\energy\\weather\\weather_data_future_2020_2060.csv
+filename_weather_data_selected_years: input_data\\energy\\weather\\weather_data_selected_years.csv
+building_properties_folder: input_data\\energy\\buildings\\ # Folder building properties
+hp_properties_folder: input_data\\energy\\heat_pumps\\ # Folder heat pump properties
+
+filename_users_CACER_xls: input_data\\config\\users CACER.xlsx
+
+# reporting inputs
+filename_template_report: input_data\\config\\reporting\\template\\Report_template.docx
+
+# categories of users
+category_id:
+  pubblico: P
+  domestico: D
+  industriale: I
+  commerciale: C
+  ristorazione: R
+  supermercato: S
+  religioso: T
+  scuola: Q
+  bar: B
+  albergo: A
+  parrucchiere: E
+  ufficio: U
+  colonnina: X
+  utenza condominiale: W
+  altro: N
+  idro: O
+  cogeneratore: G

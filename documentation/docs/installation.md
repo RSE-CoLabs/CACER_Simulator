@@ -1,3 +1,0 @@
-# Installation
-
-Installazione repository.

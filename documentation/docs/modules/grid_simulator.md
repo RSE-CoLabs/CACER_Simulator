@@ -1,3 +1,0 @@
-# Grid simulator
-
-🛠️ Work in progress...
